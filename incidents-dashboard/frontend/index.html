@@ -24,14 +24,14 @@
     --gray-800: #262626;
     --gray-900: #171717;
     --severity-critical: #E30613;
-    --severity-high: #FF6B35;
-    --severity-medium: #FFC107;
-    --severity-low: #22C55E;
+    --severity-high: #A6291D;
+    --severity-medium: #B8860B;
+    --severity-low: #4B6B4F;
     --status-open: #E30613;
-    --status-progress: #FFC107;
-    --status-resolved: #22C55E;
-    --health-healthy: #22C55E;
-    --health-degraded: #FFC107;
+    --status-progress: #B8860B;
+    --status-resolved: #4B6B4F;
+    --health-healthy: #4B6B4F;
+    --health-degraded: #B8860B;
     --health-down: #E30613;
   }
 
@@ -389,14 +389,14 @@
     text-transform: uppercase;
   }
 
-  .badge-critical { background: #FEF2F2; color: var(--severity-critical); }
-  .badge-high { background: #FFF7ED; color: var(--severity-high); }
-  .badge-medium { background: #FEFCE8; color: #A16207; }
-  .badge-low { background: #F0FDF4; color: #15803D; }
+  .badge-critical { background: #FDECEA; color: var(--severity-critical); }
+  .badge-high { background: #F5E6E3; color: var(--severity-high); }
+  .badge-medium { background: #FBF3DE; color: var(--severity-medium); }
+  .badge-low { background: #EAF1EA; color: var(--severity-low); }
 
-  .badge-open { background: #FEF2F2; color: var(--status-open); }
-  .badge-in_progress { background: #FEFCE8; color: #A16207; }
-  .badge-resolved { background: #F0FDF4; color: #15803D; }
+  .badge-open { background: #FDECEA; color: var(--status-open); }
+  .badge-in_progress { background: #FBF3DE; color: var(--status-progress); }
+  .badge-resolved { background: #EAF1EA; color: var(--status-resolved); }
 
   .status-dot {
     display: inline-block;
@@ -761,9 +761,9 @@ function renderTimelineChart(data) {
       labels: data.map(d => d.date.slice(5)),
       datasets: [
         { label: 'Critical', data: data.map(d => d.critical), borderColor: '#E30613', backgroundColor: 'rgba(227,6,19,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
-        { label: 'High', data: data.map(d => d.high), borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
-        { label: 'Medium', data: data.map(d => d.medium), borderColor: '#FFC107', backgroundColor: 'rgba(255,193,7,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
-        { label: 'Low', data: data.map(d => d.low), borderColor: '#22C55E', backgroundColor: 'rgba(34,197,94,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
+        { label: 'High', data: data.map(d => d.high), borderColor: '#A6291D', backgroundColor: 'rgba(166,41,29,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
+        { label: 'Medium', data: data.map(d => d.medium), borderColor: '#B8860B', backgroundColor: 'rgba(184,134,11,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
+        { label: 'Low', data: data.map(d => d.low), borderColor: '#4B6B4F', backgroundColor: 'rgba(75,107,79,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
       ],
     },
     options: {
@@ -804,7 +804,7 @@ function renderSeverityChart(stats) {
       labels: ['Critical', 'High', 'Medium', 'Low'],
       datasets: [{
         data: [stats.by_severity.critical, stats.by_severity.high, stats.by_severity.medium, stats.by_severity.low],
-        backgroundColor: ['#E30613', '#FF6B35', '#FFC107', '#22C55E'],
+        backgroundColor: ['#E30613', '#A6291D', '#B8860B', '#4B6B4F'],
         borderWidth: 0,
       }],
     },
@@ -833,7 +833,7 @@ function renderServiceChart(incidentsData) {
   incidentsData.incidents.forEach(i => { counts[i.service] = (counts[i.service] || 0) + 1; });
   const labels = Object.keys(counts);
   const values = Object.values(counts);
-  const colors = ['#E30613', '#2563EB', '#FF6B35', '#7C3AED', '#22C55E', '#FFC107', '#EC4899', '#14B8A6'];
+  const colors = ['#E30613', '#171717', '#A6291D', '#8C8577', '#4B6B4F', '#B8860B', '#525252', '#000000'];
 
   const ctx = document.getElementById('serviceChart').getContext('2d');
   serviceChartInstance = new Chart(ctx, {
