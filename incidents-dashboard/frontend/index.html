@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inditex - Incident Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --inditex-black: #000000;
+    --inditex-red: #E30613;
+    --inditex-white: #FFFFFF;
+    --gray-50: #FAFAFA;
+    --gray-100: #F5F5F5;
+    --gray-200: #E5E5E5;
+    --gray-300: #D4D4D4;
+    --gray-400: #A3A3A3;
+    --gray-500: #737373;
+    --gray-600: #525252;
+    --gray-700: #404040;
+    --gray-800: #262626;
+    --gray-900: #171717;
+    --severity-critical: #E30613;
+    --severity-high: #FF6B35;
+    --severity-medium: #FFC107;
+    --severity-low: #22C55E;
+    --status-open: #E30613;
+    --status-progress: #FFC107;
+    --status-resolved: #22C55E;
+    --health-healthy: #22C55E;
+    --health-degraded: #FFC107;
+    --health-down: #E30613;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .header {
+    background: var(--inditex-black);
+    color: var(--inditex-white);
+    padding: 0 32px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
+
+  .header-brand .inditex {
+    color: var(--inditex-red);
+  }
+
+  .header-brand .divider {
+    color: var(--gray-600);
+    font-weight: 300;
+  }
+
+  .header-brand .subtitle {
+    color: var(--gray-300);
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-time {
+    font-size: 13px;
+    color: var(--gray-400);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--inditex-red);
+    color: var(--inditex-white);
+  }
+
+  .btn-primary:hover {
+    background: #B80510;
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--gray-400);
+    border: 1px solid var(--gray-700);
+  }
+
+  .btn-outline:hover {
+    background: var(--gray-800);
+    color: var(--inditex-white);
+  }
+
+  .btn-sm {
+    padding: 4px 12px;
+    font-size: 12px;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 24px 32px;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .kpi-card {
+    background: var(--inditex-white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 20px;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .kpi-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  .kpi-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  .kpi-value {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--inditex-black);
+  }
+
+  .kpi-value .kpi-unit {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--gray-500);
+    margin-left: 4px;
+  }
+
+  .kpi-sub {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-top: 6px;
+  }
+
+  .kpi-sub .kpi-highlight {
+    color: var(--inditex-red);
+    font-weight: 600;
+  }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .chart-card {
+    background: var(--inditex-white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .chart-card.full {
+    grid-column: 1 / -1;
+  }
+
+  .chart-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 16px;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 220px;
+  }
+
+  .chart-container.timeline {
+    height: 240px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--inditex-black);
+  }
+
+  .filters {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .filters select, .filters input {
+    padding: 6px 12px;
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--gray-800);
+    background: var(--inditex-white);
+    outline: none;
+  }
+
+  .filters select:focus, .filters input:focus {
+    border-color: var(--inditex-red);
+  }
+
+  .table-wrapper {
+    background: var(--inditex-white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: var(--gray-100);
+  }
+
+  thead th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--gray-200);
+    user-select: none;
+  }
+
+  thead th.sortable {
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+
+  thead th.sortable:hover {
+    color: var(--inditex-red);
+  }
+
+  thead th.sortable .sort-arrow {
+    display: inline-block;
+    margin-left: 4px;
+    opacity: 0.3;
+    font-size: 10px;
+  }
+
+  thead th.sortable .sort-arrow.active {
+    opacity: 1;
+    color: var(--inditex-red);
+  }
+
+  tbody td {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--gray-100);
+    vertical-align: middle;
+  }
+
+  tbody tr:hover {
+    background: var(--gray-50);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  .badge-critical { background: #FEF2F2; color: var(--severity-critical); }
+  .badge-high { background: #FFF7ED; color: var(--severity-high); }
+  .badge-medium { background: #FEFCE8; color: #A16207; }
+  .badge-low { background: #F0FDF4; color: #15803D; }
+
+  .badge-open { background: #FEF2F2; color: var(--status-open); }
+  .badge-in_progress { background: #FEFCE8; color: #A16207; }
+  .badge-resolved { background: #F0FDF4; color: #15803D; }
+
+  .status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+
+  .dot-healthy { background: var(--health-healthy); }
+  .dot-degraded { background: var(--health-degraded); }
+  .dot-down { background: var(--health-down); }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .service-card {
+    background: var(--inditex-white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .service-card .service-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .service-card .service-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--inditex-black);
+  }
+
+  .service-card .service-meta {
+    font-size: 11px;
+    color: var(--gray-500);
+  }
+
+  .service-card .service-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--gray-500);
+  }
+
+  .empty-state p {
+    font-size: 14px;
+  }
+
+  .chart-card .chart-title .chart-click-hint {
+    font-weight: 400;
+    font-size: 11px;
+    color: var(--gray-400);
+    margin-left: 8px;
+  }
+
+  .active-filters {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--gray-700);
+  }
+
+  .filter-chip .chip-remove {
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    color: var(--gray-400);
+    transition: color 0.15s;
+  }
+
+  .filter-chip .chip-remove:hover {
+    color: var(--inditex-red);
+  }
+
+  .filter-chip.chart-active {
+    background: #FEF2F2;
+    border-color: var(--inditex-red);
+    color: var(--inditex-red);
+  }
+
+  .filter-chip.chart-active .chip-remove {
+    color: var(--inditex-red);
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gray-900);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 200;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+  }
+
+  @media (max-width: 1024px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts-grid { grid-template-columns: 1fr; }
+    .services-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 640px) {
+    .container { padding: 16px; }
+    .header { padding: 0 16px; }
+    .header-brand .subtitle { display: none; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    .services-grid { grid-template-columns: 1fr; }
+    .filters { flex-wrap: wrap; }
+    .filters select { flex: 1; min-width: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="header-brand">
+      <span class="inditex">INDITEX</span>
+      <span class="divider">|</span>
+      <span class="subtitle">Incident Dashboard</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="header-time" id="headerTime"></span>
+    <button class="btn btn-primary" id="refreshBtn" onclick="refreshAll()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15.364-6.364L21 8M3 22v-6h6M21 12a9 9 0 0 1-15.364 6.364L3 16"/></svg>
+      Refresh
+    </button>
+  </div>
+</header>
+
+<main class="container">
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-card">
+      <div class="kpi-label">Total Incidents</div>
+      <div class="kpi-value" id="kpiTotal">--</div>
+      <div class="kpi-sub" id="kpiTotalSub"></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Open</div>
+      <div class="kpi-value" id="kpiOpen">--</div>
+      <div class="kpi-sub" id="kpiOpenSub"></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">MTTR</div>
+      <div class="kpi-value" id="kpiMttr">-- <span class="kpi-unit">min</span></div>
+      <div class="kpi-sub">Mean time to resolve</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Critical Open</div>
+      <div class="kpi-value" id="kpiCritical">--</div>
+      <div class="kpi-sub" id="kpiCriticalSub"></div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Incidents over time <span class="chart-click-hint">(click legend to filter)</span></div>
+      <div class="chart-container timeline">
+        <canvas id="timelineChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">By Severity <span class="chart-click-hint">(click slice to filter)</span></div>
+      <div class="chart-container">
+        <canvas id="severityChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">By Service <span class="chart-click-hint">(click bar to filter)</span></div>
+      <div class="chart-container">
+        <canvas id="serviceChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-title">Incidents</div>
+    <div class="filters">
+      <select id="filterSeverity">
+        <option value="">All Severities</option>
+        <option value="critical">Critical</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
+      <select id="filterStatus">
+        <option value="">All Status</option>
+        <option value="open">Open</option>
+        <option value="in_progress">In Progress</option>
+        <option value="resolved">Resolved</option>
+      </select>
+      <select id="filterService">
+        <option value="">All Services</option>
+      </select>
+      <div class="active-filters" id="activeFilters"></div>
+      <button class="btn btn-outline btn-sm" onclick="applyFilters()">Apply</button>
+      <button class="btn btn-primary btn-sm" onclick="exportExcel()" title="Export filtered incidents to Excel">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Excel
+      </button>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th class="sortable" data-sort="id">ID<span class="sort-arrow">&#9650;</span></th>
+          <th class="sortable" data-sort="title">Title<span class="sort-arrow">&#9650;</span></th>
+          <th class="sortable" data-sort="service">Service<span class="sort-arrow">&#9650;</span></th>
+          <th class="sortable" data-sort="severity">Severity<span class="sort-arrow">&#9650;</span></th>
+          <th class="sortable" data-sort="status">Status<span class="sort-arrow">&#9650;</span></th>
+          <th class="sortable" data-sort="created_at">Created<span class="sort-arrow">&#9650;</span></th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="incidentsBody">
+        <tr><td colspan="7"><div class="empty-state"><p>Loading incidents...</p></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:24px">
+    <div class="section-header">
+      <div class="section-title">Services Health</div>
+    </div>
+    <div class="services-grid" id="servicesGrid">
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+let timelineChartInstance = null;
+let severityChartInstance = null;
+let serviceChartInstance = null;
+
+let allIncidents = [];
+let sortBy = 'created_at';
+let sortDir = 'desc';
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+async function api(url, opts = {}) {
+  const res = await fetch(`${API}${url}`, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', ...opts.headers },
+  });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+
+function updateClock() {
+  document.getElementById('headerTime').textContent = new Date().toLocaleString('en-GB', { hour12: false });
+}
+
+async function refreshAll() {
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Loading';
+  try {
+    const [statsData, timelineData, incidentsData, servicesData] = await Promise.all([
+      api('/api/stats'),
+      api('/api/incidents/timeline?days=14'),
+      api('/api/incidents?limit=500'),
+      api('/api/services'),
+    ]);
+    renderStats(statsData);
+    renderTimelineChart(timelineData);
+    renderSeverityChart(statsData);
+    renderServiceChart(incidentsData);
+    allIncidents = incidentsData.incidents;
+    applyFilters();
+    renderServices(servicesData);
+  } catch (e) {
+    showToast('Error loading data: ' + e.message);
+  }
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15.364-6.364L21 8M3 22v-6h6M21 12a9 9 0 0 1-15.364 6.364L3 16"/></svg> Refresh`;
+}
+
+function renderStats(s) {
+  document.getElementById('kpiTotal').textContent = s.total_incidents;
+  document.getElementById('kpiTotalSub').innerHTML = `<span class="kpi-highlight">${s.resolved_incidents}</span> resolved`;
+  document.getElementById('kpiOpen').textContent = s.open_incidents;
+  document.getElementById('kpiOpenSub').innerHTML = `<span class="kpi-highlight">${s.by_status.in_progress}</span> in progress`;
+  document.getElementById('kpiMttr').innerHTML = s.mttr_minutes ? `${Math.round(s.mttr_minutes)} <span class="kpi-unit">min</span>` : '-- <span class="kpi-unit">min</span>';
+  document.getElementById('kpiCritical').textContent = s.critical_open;
+  document.getElementById('kpiCriticalSub').innerHTML = `out of <span class="kpi-highlight">${s.by_severity.critical}</span> total critical`;
+}
+
+function renderTimelineChart(data) {
+  if (timelineChartInstance) timelineChartInstance.destroy();
+
+  const ctx = document.getElementById('timelineChart').getContext('2d');
+  timelineChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.map(d => d.date.slice(5)),
+      datasets: [
+        { label: 'Critical', data: data.map(d => d.critical), borderColor: '#E30613', backgroundColor: 'rgba(227,6,19,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
+        { label: 'High', data: data.map(d => d.high), borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
+        { label: 'Medium', data: data.map(d => d.medium), borderColor: '#FFC107', backgroundColor: 'rgba(255,193,7,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
+        { label: 'Low', data: data.map(d => d.low), borderColor: '#22C55E', backgroundColor: 'rgba(34,197,94,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top', labels: { boxWidth: 12, padding: 12, font: { size: 11, family: 'Inter' } },
+          onClick: (e, legendItem, legend) => {
+            const severity = legendItem.text.toLowerCase();
+            const ds = legend.chart.data.datasets[legendItem.datasetIndex];
+            const wasHidden = ds._chart ? ds.hidden : false;
+            legend.chart.toggleDataVisibility(legendItem.datasetIndex);
+            legend.chart.update();
+            if (!wasHidden) {
+              setChartFilter('severity', severity);
+            } else {
+              clearChartFilter('severity');
+            }
+          },
+        },
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11, family: 'Inter' } } },
+        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11, family: 'Inter' } }, grid: { color: '#F0F0F0' } },
+      },
+    },
+  });
+}
+
+function renderSeverityChart(stats) {
+  if (severityChartInstance) severityChartInstance.destroy();
+
+  const ctx = document.getElementById('severityChart').getContext('2d');
+  severityChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Critical', 'High', 'Medium', 'Low'],
+      datasets: [{
+        data: [stats.by_severity.critical, stats.by_severity.high, stats.by_severity.medium, stats.by_severity.low],
+        backgroundColor: ['#E30613', '#FF6B35', '#FFC107', '#22C55E'],
+        borderWidth: 0,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '68%',
+      onClick: (e, elements) => {
+        if (elements.length > 0) {
+          const idx = elements[0].index;
+          const severity = severityChartInstance.data.labels[idx].toLowerCase();
+          setChartFilter('severity', severity);
+        }
+      },
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 8, font: { size: 11, family: 'Inter' } } },
+      },
+    },
+  });
+}
+
+function renderServiceChart(incidentsData) {
+  if (serviceChartInstance) serviceChartInstance.destroy();
+
+  const counts = {};
+  incidentsData.incidents.forEach(i => { counts[i.service] = (counts[i.service] || 0) + 1; });
+  const labels = Object.keys(counts);
+  const values = Object.values(counts);
+  const colors = ['#E30613', '#2563EB', '#FF6B35', '#7C3AED', '#22C55E', '#FFC107', '#EC4899', '#14B8A6'];
+
+  const ctx = document.getElementById('serviceChart').getContext('2d');
+  serviceChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: labels.map((_, i) => colors[i % colors.length]),
+        borderRadius: 3,
+        borderSkipped: false,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',
+      onClick: (e, elements) => {
+        if (elements.length > 0) {
+          const idx = elements[0].index;
+          const service = serviceChartInstance.data.labels[idx];
+          setChartFilter('service', service);
+        }
+      },
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10, family: 'Inter' } }, grid: { color: '#F0F0F0' } },
+        y: { grid: { display: false }, ticks: { font: { size: 10, family: 'Inter' } } },
+      },
+    },
+  });
+}
+
+function setChartFilter(type, value) {
+  const sel = type === 'severity' ? document.getElementById('filterSeverity')
+    : type === 'service' ? document.getElementById('filterService') : null;
+  if (sel) sel.value = value;
+  applyFilters();
+  renderActiveFilters();
+}
+
+function clearChartFilter(type) {
+  const sel = type === 'severity' ? document.getElementById('filterSeverity')
+    : type === 'service' ? document.getElementById('filterService') : null;
+  if (sel) sel.value = '';
+  applyFilters();
+  renderActiveFilters();
+}
+
+function clearAllChartFilters() {
+  document.getElementById('filterSeverity').value = '';
+  document.getElementById('filterService').value = '';
+  renderActiveFilters();
+  applyFilters();
+}
+
+function renderActiveFilters() {
+  const container = document.getElementById('activeFilters');
+  const severity = document.getElementById('filterSeverity').value;
+  const service = document.getElementById('filterService').value;
+  let chips = '';
+  if (severity) {
+    chips += `<span class="filter-chip chart-active">Severity: ${severity} <span class="chip-remove" onclick="clearChartFilter('severity')">&times;</span></span>`;
+  }
+  if (service) {
+    chips += `<span class="filter-chip chart-active">Service: ${service} <span class="chip-remove" onclick="clearChartFilter('service')">&times;</span></span>`;
+  }
+  if (chips) {
+    chips += `<button class="btn btn-outline btn-sm" onclick="clearAllChartFilters()" style="font-size:11px">Clear all</button>`;
+  }
+  container.innerHTML = chips;
+}
+
+function applyFilters() {
+  const severityFilter = document.getElementById('filterSeverity').value;
+  const statusFilter = document.getElementById('filterStatus').value;
+  const serviceFilter = document.getElementById('filterService').value;
+
+  let filtered = allIncidents;
+  if (severityFilter) filtered = filtered.filter(i => i.severity === severityFilter);
+  if (statusFilter) filtered = filtered.filter(i => i.status === statusFilter);
+  if (serviceFilter) filtered = filtered.filter(i => i.service === serviceFilter);
+
+  filtered.sort((a, b) => {
+    let va = a[sortBy], vb = b[sortBy];
+    if (sortBy === 'id' || sortBy === 'created_at') {
+      va = new Date(va).getTime();
+      vb = new Date(vb).getTime();
+    }
+    if (va < vb) return sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const tbody = document.getElementById('incidentsBody');
+  tbody.innerHTML = '';
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><p>No incidents found matching filters.</p></div></td></tr>';
+    return;
+  }
+
+  filtered.forEach(inc => {
+    const tr = document.createElement('tr');
+    const created = new Date(inc.created_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    const actionBtn = inc.status === 'resolved'
+      ? '<span style="color:var(--gray-400);font-size:12px">Resolved</span>'
+      : `<button class="btn btn-outline btn-sm" onclick="resolveIncident(${inc.id})">Resolve</button>`;
+
+    tr.innerHTML = `
+      <td style="font-weight:500;color:var(--gray-600)">#${inc.id}</td>
+      <td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${inc.title}">${inc.title}</td>
+      <td><span style="font-size:12px;color:var(--gray-600)">${inc.service}</span></td>
+      <td><span class="badge badge-${inc.severity}">${inc.severity}</span></td>
+      <td><span class="badge badge-${inc.status}">${inc.status.replace('_', ' ')}</span></td>
+      <td style="font-size:12px;color:var(--gray-500)">${created}</td>
+      <td>${actionBtn}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function setSort(column) {
+  if (sortBy === column) {
+    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortBy = column;
+    sortDir = 'asc';
+  }
+  document.querySelectorAll('thead th.sortable .sort-arrow').forEach(el => el.classList.remove('active'));
+  const th = document.querySelector(`th[data-sort="${column}"]`);
+  if (th) {
+    const arrow = th.querySelector('.sort-arrow');
+    if (arrow) arrow.classList.add('active');
+  }
+  applyFilters();
+}
+
+async function resolveIncident(id) {
+  try {
+    await api(`/api/incidents/${id}/resolve`, { method: 'PUT' });
+    showToast(`Incident #${id} resolved`);
+    refreshAll();
+  } catch (e) {
+    showToast('Error resolving incident: ' + e.message);
+  }
+}
+
+function exportExcel() {
+  const severity = document.getElementById('filterSeverity').value;
+  const status = document.getElementById('filterStatus').value;
+  const service = document.getElementById('filterService').value;
+
+  let data = allIncidents;
+  if (severity) data = data.filter(i => i.severity === severity);
+  if (status) data = data.filter(i => i.status === status);
+  if (service) data = data.filter(i => i.service === service);
+
+  const rows = data.map(i => ({
+    ID: i.id,
+    Title: i.title,
+    Service: i.service,
+    Severity: i.severity,
+    Status: i.status,
+    Created: i.created_at,
+    Resolved: i.resolved_at || '',
+    Description: i.description || '',
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const cols = [
+    { wch: 6 },   // ID
+    { wch: 60 },  // Title
+    { wch: 22 },  // Service
+    { wch: 10 },  // Severity
+    { wch: 12 },  // Status
+    { wch: 22 },  // Created
+    { wch: 22 },  // Resolved
+    { wch: 50 },  // Description
+  ];
+  ws['!cols'] = cols;
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Incidents');
+  const ts = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, `incidents_${ts}.xlsx`);
+  showToast(`Exported ${data.length} incidents to Excel`);
+}
+
+function renderServices(services) {
+  const grid = document.getElementById('servicesGrid');
+  grid.innerHTML = '';
+
+  services.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'service-card';
+    const dotClass = s.status === 'healthy' ? 'dot-healthy' : s.status === 'degraded' ? 'dot-degraded' : 'dot-down';
+    const statusColor = s.status === 'healthy' ? 'var(--health-healthy)' : s.status === 'degraded' ? 'var(--health-degraded)' : 'var(--health-down)';
+    card.innerHTML = `
+      <div class="service-info">
+        <div class="service-name">${s.name}</div>
+        <div class="service-meta">${s.uptime_7d}% uptime · ${s.active_incidents || 0} active</div>
+      </div>
+      <div class="service-status" style="color:${statusColor}">
+        <span class="status-dot ${dotClass}"></span>
+        ${s.status}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+async function loadServiceFilter() {
+  try {
+    const services = await api('/api/services');
+    const sel = document.getElementById('filterService');
+    services.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.name;
+      opt.textContent = s.name;
+      sel.appendChild(opt);
+    });
+  } catch (e) {}
+}
+
+async function init() {
+  updateClock();
+  setInterval(updateClock, 30000);
+  await loadServiceFilter();
+  document.querySelectorAll('thead th.sortable').forEach(th => {
+    th.addEventListener('click', () => setSort(th.dataset.sort));
+  });
+  ['filterSeverity', 'filterStatus', 'filterService'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => {
+      renderActiveFilters();
+      applyFilters();
+    });
+  });
+  await refreshAll();
+}
+
+init();
+</script>
+</body>
+</html>

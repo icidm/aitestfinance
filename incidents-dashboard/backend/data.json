@@ -1,0 +1,1263 @@
+{
+  "generated_at": "2026-07-16T12:01:46.758559",
+  "incidents": [
+    {
+      "id": 1,
+      "title": "Kubernetes pod crash loop in Zara-API deployment",
+      "service": "Zara-API",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-06-26T07:14:46.758559",
+      "resolved_at": "2026-06-26T08:40:51.657546",
+      "description": "Root cause identified as a recent deployment. Rollback in progress. Impact limited to 22% of traffic."
+    },
+    {
+      "id": 2,
+      "title": "Rate limiter blocking legitimate traffic on Zara-API",
+      "service": "Zara-API",
+      "severity": "critical",
+      "status": "open",
+      "created_at": "2026-07-02T17:00:46.758559",
+      "resolved_at": null,
+      "description": "Monitoring alert triggered. Engineering team is investigating the root cause. Affected services are being isolated."
+    },
+    {
+      "id": 3,
+      "title": "High latency on MassimoDutti-BFF endpoint GET /api/orders",
+      "service": "MassimoDutti-BFF",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-06-29T06:17:46.758559",
+      "resolved_at": "2026-06-29T08:35:03.609851",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 4,
+      "title": "DNS resolution failure for Bershka-Web internal endpoint",
+      "service": "Bershka-Web",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-07-05T16:45:46.758559",
+      "resolved_at": "2026-07-05T22:37:42.842311",
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 16:45 UTC. Team has been notified."
+    },
+    {
+      "id": 5,
+      "title": "TLS handshake failures on Bershka-Web load balancer",
+      "service": "Bershka-Web",
+      "severity": "critical",
+      "status": "resolved",
+      "created_at": "2026-07-04T05:16:46.758559",
+      "resolved_at": "2026-07-04T06:47:33.046900",
+      "description": "Root cause identified as a recent deployment. Rollback in progress. Impact limited to 2% of traffic."
+    },
+    {
+      "id": 6,
+      "title": "Thread pool saturation in Oysho-Mobile async workers",
+      "service": "Oysho-Mobile",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-13T21:21:46.758559",
+      "resolved_at": "2026-07-14T01:56:54.965548",
+      "description": "Third-party dependency degraded. Vendor has been contacted. Traffic being rerouted through fallback provider."
+    },
+    {
+      "id": 7,
+      "title": "Graceful shutdown timeout exceeded in SINT-Inventory rolling update",
+      "service": "SINT-Inventory",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-07T15:51:46.758559",
+      "resolved_at": "2026-07-07T20:43:36.213848",
+      "description": "Monitoring alert triggered. Engineering team is investigating the root cause. Affected services are being isolated."
+    },
+    {
+      "id": 8,
+      "title": "5xx errors spiking on Bershka-Web checkout flow",
+      "service": "Bershka-Web",
+      "severity": "medium",
+      "status": "in_progress",
+      "created_at": "2026-06-26T04:09:46.758559",
+      "resolved_at": null,
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 04:09 UTC. Team has been notified."
+    },
+    {
+      "id": 9,
+      "title": "SSL certificate expired on Bershka-Web staging environment",
+      "service": "Bershka-Web",
+      "severity": "high",
+      "status": "in_progress",
+      "created_at": "2026-07-03T15:30:46.758559",
+      "resolved_at": null,
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 10,
+      "title": "Circuit breaker open for MassimoDutti-BFF downstream dependency",
+      "service": "MassimoDutti-BFF",
+      "severity": "high",
+      "status": "in_progress",
+      "created_at": "2026-07-01T17:34:46.758559",
+      "resolved_at": null,
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 11,
+      "title": "Memory leak detected in IOP-Gateway worker process",
+      "service": "IOP-Gateway",
+      "severity": "medium",
+      "status": "open",
+      "created_at": "2026-07-12T07:21:46.758559",
+      "resolved_at": null,
+      "description": "Resolved after restarting the affected pods. Post-mortem scheduled. No data loss occurred."
+    },
+    {
+      "id": 12,
+      "title": "Rate limiter blocking legitimate traffic on Stradivarius-Checkout",
+      "service": "Stradivarius-Checkout",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-03T03:26:46.758559",
+      "resolved_at": "2026-07-03T05:15:49.200719",
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 03:26 UTC. Team has been notified."
+    },
+    {
+      "id": 13,
+      "title": "Memory leak detected in Bershka-Web worker process",
+      "service": "Bershka-Web",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-06-29T02:34:46.758559",
+      "resolved_at": "2026-06-29T14:02:54.737958",
+      "description": "Resolved after restarting the affected pods. Post-mortem scheduled. No data loss occurred."
+    },
+    {
+      "id": 14,
+      "title": "Webhook delivery failure for SINT-Inventory event stream",
+      "service": "SINT-Inventory",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-08T02:08:46.758559",
+      "resolved_at": "2026-07-08T11:24:54.705682",
+      "description": "Monitoring alert triggered. Engineering team is investigating the root cause. Affected services are being isolated."
+    },
+    {
+      "id": 15,
+      "title": "Graceful shutdown timeout exceeded in IOP-Gateway rolling update",
+      "service": "IOP-Gateway",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-06-29T01:30:46.758559",
+      "resolved_at": "2026-06-29T12:07:05.844301",
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 01:30 UTC. Team has been notified."
+    },
+    {
+      "id": 16,
+      "title": "Connection pool exhaustion in SINT-Inventory database pool",
+      "service": "SINT-Inventory",
+      "severity": "high",
+      "status": "in_progress",
+      "created_at": "2026-07-06T12:30:46.758559",
+      "resolved_at": null,
+      "description": "Root cause identified as a recent deployment. Rollback in progress. Impact limited to 25% of traffic."
+    },
+    {
+      "id": 17,
+      "title": "Thread pool saturation in RFID-Tracking async workers",
+      "service": "RFID-Tracking",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-07-11T19:06:46.758559",
+      "resolved_at": "2026-07-11T23:33:44.375937",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 18,
+      "title": "Disk space critical on Bershka-Web log aggregation node",
+      "service": "Bershka-Web",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-06T19:33:46.758559",
+      "resolved_at": "2026-07-06T20:47:57.430667",
+      "description": "Root cause identified as a recent deployment. Rollback in progress. Impact limited to 8% of traffic."
+    },
+    {
+      "id": 19,
+      "title": "High latency on Zara-API endpoint GET /api/orders",
+      "service": "Zara-API",
+      "severity": "medium",
+      "status": "in_progress",
+      "created_at": "2026-07-16T09:16:46.758559",
+      "resolved_at": null,
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 09:16 UTC. Team has been notified."
+    },
+    {
+      "id": 20,
+      "title": "Thread pool saturation in Zara-API async workers",
+      "service": "Zara-API",
+      "severity": "low",
+      "status": "open",
+      "created_at": "2026-07-14T14:30:46.758559",
+      "resolved_at": null,
+      "description": "Monitoring alert triggered. Engineering team is investigating the root cause. Affected services are being isolated."
+    },
+    {
+      "id": 21,
+      "title": "Message queue backlog growing on Stradivarius-Checkout RabbitMQ",
+      "service": "Stradivarius-Checkout",
+      "severity": "medium",
+      "status": "in_progress",
+      "created_at": "2026-06-28T05:55:46.758559",
+      "resolved_at": null,
+      "description": "Root cause identified as a recent deployment. Rollback in progress. Impact limited to 22% of traffic."
+    },
+    {
+      "id": 22,
+      "title": "IOP-Gateway response time P99 above SLA threshold",
+      "service": "IOP-Gateway",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-04T15:20:46.758559",
+      "resolved_at": "2026-07-05T00:13:14.801120",
+      "description": "Root cause identified as a recent deployment. Rollback in progress. Impact limited to 2% of traffic."
+    },
+    {
+      "id": 23,
+      "title": "Timeout errors on Stradivarius-Checkout external payment integration",
+      "service": "Stradivarius-Checkout",
+      "severity": "high",
+      "status": "in_progress",
+      "created_at": "2026-07-12T22:50:46.758559",
+      "resolved_at": null,
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 24,
+      "title": "5xx errors spiking on SINT-Inventory checkout flow",
+      "service": "SINT-Inventory",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-13T15:27:46.758559",
+      "resolved_at": "2026-07-14T01:43:22.761964",
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 15:27 UTC. Team has been notified."
+    },
+    {
+      "id": 25,
+      "title": "5xx errors spiking on Oysho-Mobile checkout flow",
+      "service": "Oysho-Mobile",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-11T06:37:46.758559",
+      "resolved_at": "2026-07-11T17:47:04.606804",
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 06:37 UTC. Team has been notified."
+    },
+    {
+      "id": 26,
+      "title": "Timeout errors on Stradivarius-Checkout external payment integration",
+      "service": "Stradivarius-Checkout",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-07-02T05:43:46.758559",
+      "resolved_at": "2026-07-02T07:02:03.994846",
+      "description": "Monitoring alert triggered. Engineering team is investigating the root cause. Affected services are being isolated."
+    },
+    {
+      "id": 27,
+      "title": "5xx errors spiking on RFID-Tracking checkout flow",
+      "service": "RFID-Tracking",
+      "severity": "critical",
+      "status": "resolved",
+      "created_at": "2026-07-05T19:56:46.758559",
+      "resolved_at": "2026-07-05T23:27:45.680504",
+      "description": "Resolved after restarting the affected pods. Post-mortem scheduled. No data loss occurred."
+    },
+    {
+      "id": 28,
+      "title": "TLS handshake failures on Zara-API load balancer",
+      "service": "Zara-API",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-07-03T16:59:46.758559",
+      "resolved_at": "2026-07-03T20:36:36.847439",
+      "description": "Root cause identified as a recent deployment. Rollback in progress. Impact limited to 14% of traffic."
+    },
+    {
+      "id": 29,
+      "title": "Thread pool saturation in Zara-API async workers",
+      "service": "Zara-API",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-07-07T23:53:46.758559",
+      "resolved_at": "2026-07-08T05:34:29.975733",
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 30,
+      "title": "Connection pool exhaustion in SINT-Inventory database pool",
+      "service": "SINT-Inventory",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-15T18:48:46.758559",
+      "resolved_at": "2026-07-16T05:26:34.535350",
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 31,
+      "title": "Graceful shutdown timeout exceeded in MassimoDutti-BFF rolling update",
+      "service": "MassimoDutti-BFF",
+      "severity": "medium",
+      "status": "in_progress",
+      "created_at": "2026-07-08T15:28:46.758559",
+      "resolved_at": null,
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 15:28 UTC. Team has been notified."
+    },
+    {
+      "id": 32,
+      "title": "Thread pool saturation in RFID-Tracking async workers",
+      "service": "RFID-Tracking",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-06-29T08:05:46.758559",
+      "resolved_at": "2026-06-29T10:30:18.371445",
+      "description": "Root cause identified as a recent deployment. Rollback in progress. Impact limited to 24% of traffic."
+    },
+    {
+      "id": 33,
+      "title": "Rate limiter blocking legitimate traffic on MassimoDutti-BFF",
+      "service": "MassimoDutti-BFF",
+      "severity": "low",
+      "status": "in_progress",
+      "created_at": "2026-07-09T20:45:46.758559",
+      "resolved_at": null,
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 20:45 UTC. Team has been notified."
+    },
+    {
+      "id": 34,
+      "title": "Timeout errors on Bershka-Web external payment integration",
+      "service": "Bershka-Web",
+      "severity": "low",
+      "status": "open",
+      "created_at": "2026-07-02T15:45:46.758559",
+      "resolved_at": null,
+      "description": "Resolved after restarting the affected pods. Post-mortem scheduled. No data loss occurred."
+    },
+    {
+      "id": 35,
+      "title": "Connection pool exhaustion in SINT-Inventory database pool",
+      "service": "SINT-Inventory",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-06-28T13:04:46.758559",
+      "resolved_at": "2026-06-28T23:10:38.992382",
+      "description": "Resolved after restarting the affected pods. Post-mortem scheduled. No data loss occurred."
+    },
+    {
+      "id": 36,
+      "title": "Cache miss rate exceeding threshold on IOP-Gateway Redis cluster",
+      "service": "IOP-Gateway",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-06-28T00:04:46.758559",
+      "resolved_at": "2026-06-28T02:59:43.927246",
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 00:04 UTC. Team has been notified."
+    },
+    {
+      "id": 37,
+      "title": "Graceful shutdown timeout exceeded in Oysho-Mobile rolling update",
+      "service": "Oysho-Mobile",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-08T12:52:46.758559",
+      "resolved_at": "2026-07-09T00:36:21.688322",
+      "description": "Monitoring alert triggered. Engineering team is investigating the root cause. Affected services are being isolated."
+    },
+    {
+      "id": 38,
+      "title": "Message queue backlog growing on Bershka-Web RabbitMQ",
+      "service": "Bershka-Web",
+      "severity": "low",
+      "status": "open",
+      "created_at": "2026-07-10T14:06:46.758559",
+      "resolved_at": null,
+      "description": "Monitoring alert triggered. Engineering team is investigating the root cause. Affected services are being isolated."
+    },
+    {
+      "id": 39,
+      "title": "Kubernetes pod crash loop in Stradivarius-Checkout deployment",
+      "service": "Stradivarius-Checkout",
+      "severity": "medium",
+      "status": "open",
+      "created_at": "2026-07-13T05:09:46.758559",
+      "resolved_at": null,
+      "description": "Memory leak patched. New build rolling out across all regions. ETA for full recovery: 54 minutes."
+    },
+    {
+      "id": 40,
+      "title": "Deadlock detected in Oysho-Mobile inventory transaction",
+      "service": "Oysho-Mobile",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-07-09T03:06:46.758559",
+      "resolved_at": "2026-07-09T06:39:36.060719",
+      "description": "Root cause identified as a recent deployment. Rollback in progress. Impact limited to 25% of traffic."
+    },
+    {
+      "id": 41,
+      "title": "Degraded read replicas for MassimoDutti-BFF PostgreSQL cluster",
+      "service": "MassimoDutti-BFF",
+      "severity": "medium",
+      "status": "open",
+      "created_at": "2026-06-28T17:45:46.758559",
+      "resolved_at": null,
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 17:45 UTC. Team has been notified."
+    },
+    {
+      "id": 42,
+      "title": "Graceful shutdown timeout exceeded in Oysho-Mobile rolling update",
+      "service": "Oysho-Mobile",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-02T19:54:46.758559",
+      "resolved_at": "2026-07-02T22:35:56.019823",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 43,
+      "title": "DNS resolution failure for Zara-API internal endpoint",
+      "service": "Zara-API",
+      "severity": "low",
+      "status": "open",
+      "created_at": "2026-07-14T22:57:46.758559",
+      "resolved_at": null,
+      "description": "Third-party dependency degraded. Vendor has been contacted. Traffic being rerouted through fallback provider."
+    },
+    {
+      "id": 44,
+      "title": "MassimoDutti-BFF response time P99 above SLA threshold",
+      "service": "MassimoDutti-BFF",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-12T22:41:46.758559",
+      "resolved_at": "2026-07-13T05:34:19.435134",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 45,
+      "title": "Graceful shutdown timeout exceeded in RFID-Tracking rolling update",
+      "service": "RFID-Tracking",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-09T17:42:46.758559",
+      "resolved_at": "2026-07-09T21:42:27.181459",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 46,
+      "title": "Disk space critical on Bershka-Web log aggregation node",
+      "service": "Bershka-Web",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-09T21:33:46.758559",
+      "resolved_at": "2026-07-10T07:11:27.404082",
+      "description": "Monitoring alert triggered. Engineering team is investigating the root cause. Affected services are being isolated."
+    },
+    {
+      "id": 47,
+      "title": "Connection pool exhaustion in Bershka-Web database pool",
+      "service": "Bershka-Web",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-11T04:18:46.758559",
+      "resolved_at": "2026-07-11T07:06:10.737774",
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 48,
+      "title": "Disk space critical on SINT-Inventory log aggregation node",
+      "service": "SINT-Inventory",
+      "severity": "critical",
+      "status": "resolved",
+      "created_at": "2026-07-15T22:05:46.758559",
+      "resolved_at": "2026-07-15T23:59:42.384631",
+      "description": "Monitoring alert triggered. Engineering team is investigating the root cause. Affected services are being isolated."
+    },
+    {
+      "id": 49,
+      "title": "Message queue backlog growing on SINT-Inventory RabbitMQ",
+      "service": "SINT-Inventory",
+      "severity": "medium",
+      "status": "open",
+      "created_at": "2026-07-12T04:50:46.758559",
+      "resolved_at": null,
+      "description": "Memory leak patched. New build rolling out across all regions. ETA for full recovery: 86 minutes."
+    },
+    {
+      "id": 50,
+      "title": "Disk space critical on RFID-Tracking log aggregation node",
+      "service": "RFID-Tracking",
+      "severity": "low",
+      "status": "in_progress",
+      "created_at": "2026-07-08T14:28:46.758559",
+      "resolved_at": null,
+      "description": "Third-party dependency degraded. Vendor has been contacted. Traffic being rerouted through fallback provider."
+    },
+    {
+      "id": 51,
+      "title": "Data inconsistency between Oysho-Mobile primary and replica",
+      "service": "Oysho-Mobile",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-06-26T21:04:46.758559",
+      "resolved_at": "2026-06-27T02:45:19.646509",
+      "description": "Resolved after restarting the affected pods. Post-mortem scheduled. No data loss occurred."
+    },
+    {
+      "id": 52,
+      "title": "Webhook delivery failure for Stradivarius-Checkout event stream",
+      "service": "Stradivarius-Checkout",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-09T04:44:46.758559",
+      "resolved_at": "2026-07-09T08:31:55.904005",
+      "description": "Memory leak patched. New build rolling out across all regions. ETA for full recovery: 106 minutes."
+    },
+    {
+      "id": 53,
+      "title": "Timeout errors on SINT-Inventory external payment integration",
+      "service": "SINT-Inventory",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-08T07:47:46.758559",
+      "resolved_at": "2026-07-08T16:25:12.511025",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 54,
+      "title": "Message queue backlog growing on Stradivarius-Checkout RabbitMQ",
+      "service": "Stradivarius-Checkout",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-14T10:48:46.758559",
+      "resolved_at": "2026-07-14T18:01:47.646307",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 55,
+      "title": "Health check failing for Oysho-Mobile readiness probe",
+      "service": "Oysho-Mobile",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-16T11:39:46.758559",
+      "resolved_at": "2026-07-16T21:58:39.503713",
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 56,
+      "title": "Health check failing for Zara-API readiness probe",
+      "service": "Zara-API",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-03T04:44:46.758559",
+      "resolved_at": "2026-07-03T09:43:05.446773",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 57,
+      "title": "Graceful shutdown timeout exceeded in RFID-Tracking rolling update",
+      "service": "RFID-Tracking",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-03T19:00:46.758559",
+      "resolved_at": "2026-07-04T03:08:14.948492",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 58,
+      "title": "Degraded read replicas for Stradivarius-Checkout PostgreSQL cluster",
+      "service": "Stradivarius-Checkout",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-14T10:45:46.758559",
+      "resolved_at": "2026-07-16T12:11:27.894806",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 59,
+      "title": "Thread pool saturation in Oysho-Mobile async workers",
+      "service": "Oysho-Mobile",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-01T22:45:46.758559",
+      "resolved_at": "2026-07-02T07:52:36.362968",
+      "description": "Root cause identified as a recent deployment. Rollback in progress. Impact limited to 16% of traffic."
+    },
+    {
+      "id": 60,
+      "title": "Webhook delivery failure for SINT-Inventory event stream",
+      "service": "SINT-Inventory",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-15T10:13:46.758559",
+      "resolved_at": "2026-07-15T20:22:50.832795",
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 10:13 UTC. Team has been notified."
+    },
+    {
+      "id": 61,
+      "title": "TLS handshake failures on SINT-Inventory load balancer",
+      "service": "SINT-Inventory",
+      "severity": "high",
+      "status": "in_progress",
+      "created_at": "2026-06-27T05:32:46.758559",
+      "resolved_at": null,
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 62,
+      "title": "Degraded read replicas for SINT-Inventory PostgreSQL cluster",
+      "service": "SINT-Inventory",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-11T02:55:46.758559",
+      "resolved_at": "2026-07-11T10:03:04.743115",
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 02:55 UTC. Team has been notified."
+    },
+    {
+      "id": 63,
+      "title": "TLS handshake failures on SINT-Inventory load balancer",
+      "service": "SINT-Inventory",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-03T13:08:46.758559",
+      "resolved_at": "2026-07-03T22:31:47.467196",
+      "description": "Monitoring alert triggered. Engineering team is investigating the root cause. Affected services are being isolated."
+    },
+    {
+      "id": 64,
+      "title": "DNS resolution failure for IOP-Gateway internal endpoint",
+      "service": "IOP-Gateway",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-06-26T18:34:46.758559",
+      "resolved_at": "2026-06-27T02:31:35.049277",
+      "description": "Third-party dependency degraded. Vendor has been contacted. Traffic being rerouted through fallback provider."
+    },
+    {
+      "id": 65,
+      "title": "Message queue backlog growing on SINT-Inventory RabbitMQ",
+      "service": "SINT-Inventory",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-16T00:21:46.758559",
+      "resolved_at": "2026-07-16T05:52:15.926362",
+      "description": "Memory leak patched. New build rolling out across all regions. ETA for full recovery: 34 minutes."
+    },
+    {
+      "id": 66,
+      "title": "Disk space critical on Stradivarius-Checkout log aggregation node",
+      "service": "Stradivarius-Checkout",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-06-29T22:09:46.758559",
+      "resolved_at": "2026-06-30T08:12:59.022741",
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 67,
+      "title": "TLS handshake failures on Stradivarius-Checkout load balancer",
+      "service": "Stradivarius-Checkout",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-07-13T16:19:46.758559",
+      "resolved_at": "2026-07-13T18:57:17.013581",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 68,
+      "title": "Thread pool saturation in Bershka-Web async workers",
+      "service": "Bershka-Web",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-06-30T16:17:46.758559",
+      "resolved_at": "2026-06-30T18:15:05.774182",
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 69,
+      "title": "Authentication token validation errors in Zara-API",
+      "service": "Zara-API",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-08T20:20:46.758559",
+      "resolved_at": "2026-07-08T21:02:40.629496",
+      "description": "Memory leak patched. New build rolling out across all regions. ETA for full recovery: 116 minutes."
+    },
+    {
+      "id": 70,
+      "title": "MassimoDutti-BFF response time P99 above SLA threshold",
+      "service": "MassimoDutti-BFF",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-07-06T17:38:46.758559",
+      "resolved_at": "2026-07-06T23:37:46.124910",
+      "description": "Memory leak patched. New build rolling out across all regions. ETA for full recovery: 82 minutes."
+    },
+    {
+      "id": 71,
+      "title": "Cache miss rate exceeding threshold on MassimoDutti-BFF Redis cluster",
+      "service": "MassimoDutti-BFF",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-06-29T03:47:46.758559",
+      "resolved_at": "2026-06-29T07:55:30.443441",
+      "description": "Root cause identified as a recent deployment. Rollback in progress. Impact limited to 24% of traffic."
+    },
+    {
+      "id": 72,
+      "title": "SSL certificate expired on Zara-API staging environment",
+      "service": "Zara-API",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-06-28T12:31:46.758559",
+      "resolved_at": "2026-06-29T00:15:38.289306",
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 73,
+      "title": "Cache miss rate exceeding threshold on Zara-API Redis cluster",
+      "service": "Zara-API",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-06-30T04:38:46.758559",
+      "resolved_at": "2026-06-30T13:17:18.723867",
+      "description": "Resolved after restarting the affected pods. Post-mortem scheduled. No data loss occurred."
+    },
+    {
+      "id": 74,
+      "title": "Authentication token validation errors in MassimoDutti-BFF",
+      "service": "MassimoDutti-BFF",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-07-12T07:21:46.758559",
+      "resolved_at": "2026-07-12T10:42:35.903568",
+      "description": "Memory leak patched. New build rolling out across all regions. ETA for full recovery: 16 minutes."
+    },
+    {
+      "id": 75,
+      "title": "Health check failing for MassimoDutti-BFF readiness probe",
+      "service": "MassimoDutti-BFF",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-02T08:09:46.758559",
+      "resolved_at": "2026-07-02T09:30:53.760408",
+      "description": "Root cause identified as a recent deployment. Rollback in progress. Impact limited to 13% of traffic."
+    },
+    {
+      "id": 76,
+      "title": "Connection pool exhaustion in MassimoDutti-BFF database pool",
+      "service": "MassimoDutti-BFF",
+      "severity": "medium",
+      "status": "in_progress",
+      "created_at": "2026-06-26T04:54:46.758559",
+      "resolved_at": null,
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 77,
+      "title": "Disk space critical on Stradivarius-Checkout log aggregation node",
+      "service": "Stradivarius-Checkout",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-06-27T02:06:46.758559",
+      "resolved_at": "2026-06-27T06:09:40.114979",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 78,
+      "title": "Thread pool saturation in Zara-API async workers",
+      "service": "Zara-API",
+      "severity": "low",
+      "status": "in_progress",
+      "created_at": "2026-07-12T14:56:46.758559",
+      "resolved_at": null,
+      "description": "Resolved after restarting the affected pods. Post-mortem scheduled. No data loss occurred."
+    },
+    {
+      "id": 79,
+      "title": "Authentication token validation errors in Stradivarius-Checkout",
+      "service": "Stradivarius-Checkout",
+      "severity": "critical",
+      "status": "open",
+      "created_at": "2026-06-28T16:31:46.758559",
+      "resolved_at": null,
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 80,
+      "title": "Connection pool exhaustion in Stradivarius-Checkout database pool",
+      "service": "Stradivarius-Checkout",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-06T14:47:46.758559",
+      "resolved_at": "2026-07-06T22:29:04.160056",
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 81,
+      "title": "Thread pool saturation in RFID-Tracking async workers",
+      "service": "RFID-Tracking",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-10T07:57:46.758559",
+      "resolved_at": "2026-07-10T12:00:01.887601",
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 07:57 UTC. Team has been notified."
+    },
+    {
+      "id": 82,
+      "title": "Authentication token validation errors in Stradivarius-Checkout",
+      "service": "Stradivarius-Checkout",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-06-28T02:17:46.758559",
+      "resolved_at": "2026-06-28T09:00:21.995251",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 83,
+      "title": "Circuit breaker open for Oysho-Mobile downstream dependency",
+      "service": "Oysho-Mobile",
+      "severity": "high",
+      "status": "open",
+      "created_at": "2026-07-02T01:23:46.758559",
+      "resolved_at": null,
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 84,
+      "title": "IOP-Gateway response time P99 above SLA threshold",
+      "service": "IOP-Gateway",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-09T03:25:46.758559",
+      "resolved_at": "2026-07-09T05:56:39.654696",
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 03:25 UTC. Team has been notified."
+    },
+    {
+      "id": 85,
+      "title": "TLS handshake failures on RFID-Tracking load balancer",
+      "service": "RFID-Tracking",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-06-29T22:21:46.758559",
+      "resolved_at": "2026-06-30T02:51:52.346290",
+      "description": "Memory leak patched. New build rolling out across all regions. ETA for full recovery: 75 minutes."
+    },
+    {
+      "id": 86,
+      "title": "Deadlock detected in RFID-Tracking inventory transaction",
+      "service": "RFID-Tracking",
+      "severity": "medium",
+      "status": "in_progress",
+      "created_at": "2026-07-05T22:17:46.758559",
+      "resolved_at": null,
+      "description": "Memory leak patched. New build rolling out across all regions. ETA for full recovery: 99 minutes."
+    },
+    {
+      "id": 87,
+      "title": "Connection pool exhaustion in Stradivarius-Checkout database pool",
+      "service": "Stradivarius-Checkout",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-04T01:45:46.758559",
+      "resolved_at": "2026-07-04T06:54:39.605919",
+      "description": "Third-party dependency degraded. Vendor has been contacted. Traffic being rerouted through fallback provider."
+    },
+    {
+      "id": 88,
+      "title": "Message queue backlog growing on Stradivarius-Checkout RabbitMQ",
+      "service": "Stradivarius-Checkout",
+      "severity": "low",
+      "status": "open",
+      "created_at": "2026-06-30T10:49:46.758559",
+      "resolved_at": null,
+      "description": "Third-party dependency degraded. Vendor has been contacted. Traffic being rerouted through fallback provider."
+    },
+    {
+      "id": 89,
+      "title": "Thread pool saturation in Zara-API async workers",
+      "service": "Zara-API",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-06-30T18:53:46.758559",
+      "resolved_at": "2026-07-01T00:58:13.826953",
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 90,
+      "title": "Authentication token validation errors in Zara-API",
+      "service": "Zara-API",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-16T06:42:46.758559",
+      "resolved_at": "2026-07-16T08:17:05.619492",
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 06:42 UTC. Team has been notified."
+    },
+    {
+      "id": 91,
+      "title": "Health check failing for RFID-Tracking readiness probe",
+      "service": "RFID-Tracking",
+      "severity": "medium",
+      "status": "in_progress",
+      "created_at": "2026-07-12T13:43:46.758559",
+      "resolved_at": null,
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 92,
+      "title": "SSL certificate expired on Oysho-Mobile staging environment",
+      "service": "Oysho-Mobile",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-06-30T16:29:46.758559",
+      "resolved_at": "2026-06-30T21:26:46.869835",
+      "description": "Resolved after restarting the affected pods. Post-mortem scheduled. No data loss occurred."
+    },
+    {
+      "id": 93,
+      "title": "High latency on MassimoDutti-BFF endpoint GET /api/orders",
+      "service": "MassimoDutti-BFF",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-03T02:15:46.758559",
+      "resolved_at": "2026-07-03T09:25:55.586652",
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 94,
+      "title": "DNS resolution failure for Stradivarius-Checkout internal endpoint",
+      "service": "Stradivarius-Checkout",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-01T01:26:46.758559",
+      "resolved_at": "2026-07-01T11:56:48.268245",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 95,
+      "title": "5xx errors spiking on Oysho-Mobile checkout flow",
+      "service": "Oysho-Mobile",
+      "severity": "medium",
+      "status": "in_progress",
+      "created_at": "2026-07-09T01:14:46.758559",
+      "resolved_at": null,
+      "description": "Memory leak patched. New build rolling out across all regions. ETA for full recovery: 118 minutes."
+    },
+    {
+      "id": 96,
+      "title": "Health check failing for RFID-Tracking readiness probe",
+      "service": "RFID-Tracking",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-04T10:53:46.758559",
+      "resolved_at": "2026-07-04T21:26:58.240045",
+      "description": "Third-party dependency degraded. Vendor has been contacted. Traffic being rerouted through fallback provider."
+    },
+    {
+      "id": 97,
+      "title": "Circuit breaker open for IOP-Gateway downstream dependency",
+      "service": "IOP-Gateway",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-07-02T07:35:46.758559",
+      "resolved_at": "2026-07-02T09:55:17.168591",
+      "description": "Resolved after restarting the affected pods. Post-mortem scheduled. No data loss occurred."
+    },
+    {
+      "id": 98,
+      "title": "Bershka-Web response time P99 above SLA threshold",
+      "service": "Bershka-Web",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-06-26T18:37:46.758559",
+      "resolved_at": "2026-06-27T05:20:06.720031",
+      "description": "Third-party dependency degraded. Vendor has been contacted. Traffic being rerouted through fallback provider."
+    },
+    {
+      "id": 99,
+      "title": "Kubernetes pod crash loop in SINT-Inventory deployment",
+      "service": "SINT-Inventory",
+      "severity": "low",
+      "status": "open",
+      "created_at": "2026-06-30T15:18:46.758559",
+      "resolved_at": null,
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 100,
+      "title": "Disk space critical on SINT-Inventory log aggregation node",
+      "service": "SINT-Inventory",
+      "severity": "medium",
+      "status": "open",
+      "created_at": "2026-07-14T06:17:46.758559",
+      "resolved_at": null,
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 101,
+      "title": "DNS resolution failure for Bershka-Web internal endpoint",
+      "service": "Bershka-Web",
+      "severity": "medium",
+      "status": "open",
+      "created_at": "2026-07-14T22:52:46.758559",
+      "resolved_at": null,
+      "description": "Monitoring alert triggered. Engineering team is investigating the root cause. Affected services are being isolated."
+    },
+    {
+      "id": 102,
+      "title": "Connection pool exhaustion in RFID-Tracking database pool",
+      "service": "RFID-Tracking",
+      "severity": "medium",
+      "status": "in_progress",
+      "created_at": "2026-06-27T16:06:46.758559",
+      "resolved_at": null,
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 103,
+      "title": "Disk space critical on Zara-API log aggregation node",
+      "service": "Zara-API",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-08T15:45:46.758559",
+      "resolved_at": "2026-07-08T16:22:15.812221",
+      "description": "Memory leak patched. New build rolling out across all regions. ETA for full recovery: 100 minutes."
+    },
+    {
+      "id": 104,
+      "title": "Connection pool exhaustion in RFID-Tracking database pool",
+      "service": "RFID-Tracking",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-01T21:39:46.758559",
+      "resolved_at": "2026-07-02T06:06:05.737975",
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 105,
+      "title": "Health check failing for Oysho-Mobile readiness probe",
+      "service": "Oysho-Mobile",
+      "severity": "low",
+      "status": "in_progress",
+      "created_at": "2026-07-02T08:46:46.758559",
+      "resolved_at": null,
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 106,
+      "title": "IOP-Gateway response time P99 above SLA threshold",
+      "service": "IOP-Gateway",
+      "severity": "high",
+      "status": "resolved",
+      "created_at": "2026-06-27T23:44:46.758559",
+      "resolved_at": "2026-06-28T05:36:51.609262",
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 23:44 UTC. Team has been notified."
+    },
+    {
+      "id": 107,
+      "title": "Kubernetes pod crash loop in MassimoDutti-BFF deployment",
+      "service": "MassimoDutti-BFF",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-06-26T16:10:46.758559",
+      "resolved_at": "2026-06-26T18:51:58.222915",
+      "description": "Third-party dependency degraded. Vendor has been contacted. Traffic being rerouted through fallback provider."
+    },
+    {
+      "id": 108,
+      "title": "Webhook delivery failure for RFID-Tracking event stream",
+      "service": "RFID-Tracking",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-08T08:04:46.758559",
+      "resolved_at": "2026-07-08T13:38:56.838632",
+      "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 08:04 UTC. Team has been notified."
+    },
+    {
+      "id": 109,
+      "title": "Deadlock detected in MassimoDutti-BFF inventory transaction",
+      "service": "MassimoDutti-BFF",
+      "severity": "medium",
+      "status": "in_progress",
+      "created_at": "2026-06-27T12:35:46.758559",
+      "resolved_at": null,
+      "description": "Resolved after restarting the affected pods. Post-mortem scheduled. No data loss occurred."
+    },
+    {
+      "id": 110,
+      "title": "Degraded read replicas for MassimoDutti-BFF PostgreSQL cluster",
+      "service": "MassimoDutti-BFF",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-06-29T03:03:46.758559",
+      "resolved_at": "2026-06-29T12:08:54.315679",
+      "description": "Memory leak patched. New build rolling out across all regions. ETA for full recovery: 52 minutes."
+    },
+    {
+      "id": 111,
+      "title": "Timeout errors on SINT-Inventory external payment integration",
+      "service": "SINT-Inventory",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-06T04:06:46.758559",
+      "resolved_at": "2026-07-06T11:01:19.500942",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 112,
+      "title": "Disk space critical on SINT-Inventory log aggregation node",
+      "service": "SINT-Inventory",
+      "severity": "low",
+      "status": "open",
+      "created_at": "2026-07-14T00:18:46.758559",
+      "resolved_at": null,
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    },
+    {
+      "id": 113,
+      "title": "Health check failing for Zara-API readiness probe",
+      "service": "Zara-API",
+      "severity": "low",
+      "status": "in_progress",
+      "created_at": "2026-06-26T11:22:46.758559",
+      "resolved_at": null,
+      "description": "Third-party dependency degraded. Vendor has been contacted. Traffic being rerouted through fallback provider."
+    },
+    {
+      "id": 114,
+      "title": "Authentication token validation errors in Stradivarius-Checkout",
+      "service": "Stradivarius-Checkout",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-09T02:20:46.758559",
+      "resolved_at": "2026-07-09T03:22:04.116535",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 115,
+      "title": "Kubernetes pod crash loop in SINT-Inventory deployment",
+      "service": "SINT-Inventory",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-07-14T18:53:46.758559",
+      "resolved_at": "2026-07-15T03:06:24.888019",
+      "description": "Database migration caused locking. Rolled back migration. Performance returned to baseline."
+    },
+    {
+      "id": 116,
+      "title": "Message queue backlog growing on RFID-Tracking RabbitMQ",
+      "service": "RFID-Tracking",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-06-28T15:55:46.758559",
+      "resolved_at": "2026-06-29T03:13:43.555480",
+      "description": "Memory leak patched. New build rolling out across all regions. ETA for full recovery: 67 minutes."
+    },
+    {
+      "id": 117,
+      "title": "Disk space critical on Stradivarius-Checkout log aggregation node",
+      "service": "Stradivarius-Checkout",
+      "severity": "critical",
+      "status": "resolved",
+      "created_at": "2026-07-08T04:07:46.758559",
+      "resolved_at": "2026-07-08T07:47:08.130836",
+      "description": "Third-party dependency degraded. Vendor has been contacted. Traffic being rerouted through fallback provider."
+    },
+    {
+      "id": 118,
+      "title": "Memory leak detected in Zara-API worker process",
+      "service": "Zara-API",
+      "severity": "medium",
+      "status": "resolved",
+      "created_at": "2026-06-25T21:56:46.758559",
+      "resolved_at": "2026-06-26T05:18:48.601283",
+      "description": "Monitoring alert triggered. Engineering team is investigating the root cause. Affected services are being isolated."
+    },
+    {
+      "id": 119,
+      "title": "TLS handshake failures on RFID-Tracking load balancer",
+      "service": "RFID-Tracking",
+      "severity": "critical",
+      "status": "resolved",
+      "created_at": "2026-07-16T05:57:46.758559",
+      "resolved_at": "2026-07-16T07:16:42.541915",
+      "description": "Monitoring alert triggered. Engineering team is investigating the root cause. Affected services are being isolated."
+    },
+    {
+      "id": 120,
+      "title": "Timeout errors on MassimoDutti-BFF external payment integration",
+      "service": "MassimoDutti-BFF",
+      "severity": "low",
+      "status": "resolved",
+      "created_at": "2026-07-12T07:27:46.758559",
+      "resolved_at": "2026-07-12T09:13:37.709362",
+      "description": "Hotfix deployed to production. Monitoring shows recovery in progress. Incident will be closed after verification."
+    }
+  ],
+  "services": [
+    {
+      "name": "IOP-Gateway",
+      "description": "Inditex Open Platform API Gateway",
+      "status": "degraded",
+      "last_checked": "2026-07-16T12:01:46.758559",
+      "uptime_7d": 98.7
+    },
+    {
+      "name": "SINT-Inventory",
+      "description": "Sistema Integrado de Stock",
+      "status": "healthy",
+      "last_checked": "2026-07-16T12:01:46.758559",
+      "uptime_7d": 99.68
+    },
+    {
+      "name": "RFID-Tracking",
+      "description": "RFID item tracking service",
+      "status": "healthy",
+      "last_checked": "2026-07-16T12:01:46.758559",
+      "uptime_7d": 98.52
+    },
+    {
+      "name": "Zara-API",
+      "description": "Zara e-commerce backend",
+      "status": "healthy",
+      "last_checked": "2026-07-16T12:01:46.758559",
+      "uptime_7d": 98.69
+    },
+    {
+      "name": "MassimoDutti-BFF",
+      "description": "Massimo Dutti BFF layer",
+      "status": "healthy",
+      "last_checked": "2026-07-16T12:01:46.758559",
+      "uptime_7d": 98.67
+    },
+    {
+      "name": "Bershka-Web",
+      "description": "Bershka web frontend service",
+      "status": "healthy",
+      "last_checked": "2026-07-16T12:01:46.758559",
+      "uptime_7d": 99.17
+    },
+    {
+      "name": "Oysho-Mobile",
+      "description": "Oysho mobile API",
+      "status": "healthy",
+      "last_checked": "2026-07-16T12:01:46.758559",
+      "uptime_7d": 99.39
+    },
+    {
+      "name": "Stradivarius-Checkout",
+      "description": "Checkout service for Stradivarius",
+      "status": "healthy",
+      "last_checked": "2026-07-16T12:01:46.758559",
+      "uptime_7d": 98.83
+    }
+  ]
+}
