@@ -292,6 +292,39 @@
     overflow: hidden;
   }
 
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 16px;
+    background: var(--inditex-white);
+    border-top: 1px solid var(--gray-200);
+    color: var(--gray-600);
+    font-size: 12px;
+  }
+
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pagination select {
+    padding: 4px 8px;
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    background: var(--inditex-white);
+    color: var(--gray-700);
+    font-family: inherit;
+    font-size: 12px;
+  }
+
+  .pagination .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
   table {
     width: 100%;
     border-collapse: collapse;
@@ -511,6 +544,7 @@
     .services-grid { grid-template-columns: 1fr; }
     .filters { flex-wrap: wrap; }
     .filters select { flex: 1; min-width: 120px; }
+    .pagination { align-items: flex-start; flex-direction: column; }
   }
 </style>
 </head>
@@ -623,6 +657,20 @@
         <tr><td colspan="7"><div class="empty-state"><p>Loading incidents...</p></div></td></tr>
       </tbody>
     </table>
+    <div class="pagination" id="incidentPagination">
+      <span id="paginationSummary">0 incidents</span>
+      <div class="pagination-controls">
+        <label for="pageSize">Rows</label>
+        <select id="pageSize" onchange="changePageSize(this.value)">
+          <option value="10">10</option>
+          <option value="25" selected>25</option>
+          <option value="50">50</option>
+        </select>
+        <button class="btn btn-outline btn-sm" id="previousPage" onclick="changePage(-1)" aria-label="Previous page">Previous</button>
+        <span id="pageIndicator">Page 1 of 1</span>
+        <button class="btn btn-outline btn-sm" id="nextPage" onclick="changePage(1)" aria-label="Next page">Next</button>
+      </div>
+    </div>
   </div>
 
   <div style="margin-top:24px">
@@ -645,6 +693,8 @@ let serviceChartInstance = null;
 let allIncidents = [];
 let sortBy = 'created_at';
 let sortDir = 'desc';
+let currentPage = 1;
+let pageSize = 25;
 
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -857,7 +907,7 @@ function renderActiveFilters() {
   container.innerHTML = chips;
 }
 
-function applyFilters() {
+function applyFilters(resetPage = true) {
   const severityFilter = document.getElementById('filterSeverity').value;
   const statusFilter = document.getElementById('filterStatus').value;
   const serviceFilter = document.getElementById('filterService').value;
@@ -878,15 +928,23 @@ function applyFilters() {
     return 0;
   });
 
+  if (resetPage) currentPage = 1;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  currentPage = Math.min(currentPage, totalPages);
+  const pageStart = (currentPage - 1) * pageSize;
+  const pageIncidents = filtered.slice(pageStart, pageStart + pageSize);
+
   const tbody = document.getElementById('incidentsBody');
   tbody.innerHTML = '';
+
+  renderPagination(filtered.length, pageStart, pageIncidents.length, totalPages);
 
   if (filtered.length === 0) {
     tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><p>No incidents found matching filters.</p></div></td></tr>';
     return;
   }
 
-  filtered.forEach(inc => {
+  pageIncidents.forEach(inc => {
     const tr = document.createElement('tr');
     const created = new Date(inc.created_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
     const actionBtn = inc.status === 'resolved'
@@ -904,6 +962,25 @@ function applyFilters() {
     `;
     tbody.appendChild(tr);
   });
+}
+
+function renderPagination(total, pageStart, visibleCount, totalPages) {
+  const first = total === 0 ? 0 : pageStart + 1;
+  const last = pageStart + visibleCount;
+  document.getElementById('paginationSummary').textContent = `${first}-${last} of ${total} incidents`;
+  document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${totalPages}`;
+  document.getElementById('previousPage').disabled = currentPage === 1;
+  document.getElementById('nextPage').disabled = currentPage === totalPages;
+}
+
+function changePage(direction) {
+  currentPage += direction;
+  applyFilters(false);
+}
+
+function changePageSize(value) {
+  pageSize = Number(value);
+  applyFilters();
 }
 
 function setSort(column) {
