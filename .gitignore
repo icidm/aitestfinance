@@ -1,0 +1,11 @@
+.generated/
+packages/
+.cache/
+.backup/
+.install.lock
+.console/
+.env
+# OS files and IDE/editor settings
+# macOS
+.DS_Store
+.gitignore.local

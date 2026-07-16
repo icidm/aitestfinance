@@ -1,0 +1,90 @@
+# .aicontext/manifest.yaml
+# AI Context configuration for ai-test-finance
+
+remote-config: "https://github.com/icidm/aitestfinance.git"
+name: aitestfinance
+version: 1.0.0
+description: AI context for ai-test-finance
+
+# ─── Assistants ───────────────────────────────────────────────────────────────
+# Available: copilot, cursor, windsurf, cline, opencode, aider, claude, codex, roo, amp
+assistants:
+  - copilot
+  - opencode
+
+# ─── Link mode ────────────────────────────────────────────────────────────────
+# How context files are linked into the assistant workspace.
+# Options: symlink (default), hardlink, copy
+# Can be overridden with AICONTEXT_LINK_MODE env var
+# link_mode: symlink
+
+# ─── Config sync mode ─────────────────────────────────────────────────────────
+# Controls how `aicontext config push` publishes configuration changes.
+# Options: push (default), pull-request
+# sync-mode: push
+# sync-auto-merge: false
+
+# ─── Marketplace sources ──────────────────────────────────────────────────────
+# Package repositories to browse in the marketplace console.
+# These are pre-loaded when opening the console or running 'aicontext templates'.
+marketplace:
+  - github:inditex/cac-moyaagentrules
+
+# ─── Templates ────────────────────────────────────────────────────────────────
+# Pre-configured manifest templates that add packages, MCPs, etc.
+# Applied automatically on 'aicontext install'. Use 'aicontext use <tpl>' to add one.
+# Templates NEVER modify this file - their contents are resolved in memory at install/list time
+#
+# Note: template references with # must be quoted in YAML
+# templates:
+#   - "github:inditex/cac-moyaagentrules#templates/amiga-java"
+
+# ─── Overrides ────────────────────────────────────────────────────────────────
+# When a package or MCP is defined both here AND in a template, your definition
+# takes precedence. Use this to customize template-provided elements.
+#
+# overrides:
+#   packages:
+#     - github      # Your 'github' package overrides template's 'github' package
+#   mcps:
+#     - docs-server # Your 'docs-server' MCP overrides template's 'docs-server' MCP
+
+# ─── Workspace repositories ───────────────────────────────────────────────
+# Git repositories cloned into repos/ on 'aicontext install'.
+# Useful for setting up a multi-repo workspace with one command.
+# The repos/ directory is automatically git-ignored.
+#
+# repos:
+#   - name: my-backend
+#     source: "github:acme-corp/my-backend-api@main"
+#   - name: my-frontend
+#     source: "github:acme-corp/my-frontend@v2.0.0"
+
+# ─── Remote context packages ─────────────────────────────────────────────────
+# Download rules, skills and prompts from remote repositories.
+# For a fixed version: source: "github:org/repo@v1.0.0"
+#
+# packages:
+#   - name: inditex-moya
+#     source: "github:inditex/cac-moyaagentrules"
+#     select:
+#       rules:
+#         - inditex
+#         - amiga-java
+#       skills:
+#         - skill-creator
+#       prompts:
+#         - common
+#       mcps:
+#         - github
+#         - docs-server
+
+# ─── MCP Servers ──────────────────────────────────────────────────────────────
+# Model Context Protocol servers to configure for each assistant.
+# Types: stdio (command + args) | url (remote SSE/streamable-http)
+#
+# mcps:
+#   - name: remote-docs
+#     url: "https://mcp.example.com/docs/sse"
+#     headers:
+#       Authorization: "Bearer ${DOCS_TOKEN}"
