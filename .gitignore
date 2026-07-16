@@ -1,0 +1,10 @@
+# --- aicontext propagated files (start) ---
+/.aicontext
+/.github/agents
+/.github/skills
+/.vscode/mcp.json
+/.opencode/agents
+/.opencode/skills
+/AGENTS.md
+/.opencode/opencode.json
+# --- aicontext propagated files (end) ---
