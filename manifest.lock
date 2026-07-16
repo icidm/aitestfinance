@@ -1,4 +1,66 @@
 schemaVersion: 1
-rootManifestHash: 987bb57853d46f88d1ac4ea35fec8fa2ab3f3f53cd3383070d13e8fb84777fb3
-generatedAt: '1784182940'
-packages: {}
+rootManifestHash: 3271f46589df06e35b362c190c752956d1216a7b000e38e5588297269b5da9d1
+generatedAt: '1784198036'
+templates:
+- reference: github:inditex/cac-moyaagentrules#templates/itx-coding
+  sha: f3921bb0a220d58783faf5baced159034072ba36
+  origin: template:github:inditex/cac-moyaagentrules#templates/sdd
+- reference: github:inditex/cac-moyaagentrules#templates/sdd
+  sha: f3921bb0a220d58783faf5baced159034072ba36
+  origin: user
+packages:
+  moya:
+    declared:
+      name: moya
+      source: github:inditex/cac-moyaagentrules
+      select:
+        skills:
+        - aidev-code
+        - conventional-commits
+        - gh-issue-create
+        - gh-issue-comment
+        - gh-pr-create
+        - gh-pr-comment
+        - paas-config
+        - asdf-allowlist
+        - asdf-command-not-found
+        - asdf-plugin-add
+        - asdf-version-install
+        - asdf-version-set
+        - aidev-agent-questions
+        - aidev-explore
+        - aidev-workspace-bootstrap
+        - aidev-sdd
+        - aidev-research
+        - aidev-plan
+        - aidev-tech-plan
+        - aidev-test
+        - aidev-verify
+        - aidev-review
+        - aidev-retro
+        - backlog-management
+        - aidev-pr-remote-diagnosis
+        - inditex-software-artifacts
+        mcps:
+        - git-workflow
+        - devhub
+        - geppetto
+        agents:
+        - aidev-coder/AIDevCoder
+        - aidev-init/AIDevInit
+        - aidev-orchestrator/AIDevOrchestrator
+        - aidev-planner/AIDevPlanner
+        - aidev-researcher/AIDevResearcher
+        - aidev-retro/AIDevRetro
+        - aidev-tester/AIDevTester
+        - aidev-tech-planner/AIDevTechPlanner
+        - aidev-verifier/AIDevVerifier
+        tools:
+        - aidevtracker
+        - aidev-verify-deps
+        - aidev-scripts-deps
+    source: github:inditex/cac-moyaagentrules
+    selectHash: 7e62cebe8f4b4d0e
+    sha: f3921bb0a220d58783faf5baced159034072ba36
+    origin: template:github:inditex/cac-moyaagentrules#templates/itx-coding
+    position: 0

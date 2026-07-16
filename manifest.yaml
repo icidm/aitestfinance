@@ -1,8 +1,5 @@
-# .aicontext/manifest.yaml
-# AI Context configuration for ai-test-finance
-
-remote-config: "https://github.com/icidm/aitestfinance.git"
 name: aitestfinance
+remote-config: "https://github.com/icidm/aitestfinance.git"
 version: 1.0.0
 description: AI context for ai-test-finance
 
@@ -88,3 +85,9 @@ marketplace:
 #     url: "https://mcp.example.com/docs/sse"
 #     headers:
 #       Authorization: "Bearer ${DOCS_TOKEN}"
+templates:
+- github:inditex/cac-moyaagentrules#templates/sdd
+repos:
+- name: aitestfinance
+  source: https://github.com/icidm/aitestfinance
+  propagate_context: true
