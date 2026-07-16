@@ -186,9 +186,9 @@
       "title": "High latency on Zara-API endpoint GET /api/orders",
       "service": "Zara-API",
       "severity": "medium",
-      "status": "in_progress",
+      "status": "resolved",
       "created_at": "2026-07-16T09:16:46.758559",
-      "resolved_at": null,
+      "resolved_at": "2026-07-16T16:05:11.422463",
       "description": "Investigation ongoing. Initial metrics show elevated error rates starting at 09:16 UTC. Team has been notified."
     },
     {

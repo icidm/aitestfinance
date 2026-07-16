@@ -285,6 +285,10 @@
     border-color: var(--inditex-red);
   }
 
+  .filters input#filterSearch {
+    width: 220px;
+  }
+
   .table-wrapper {
     background: var(--inditex-white);
     border: 1px solid var(--gray-200);
@@ -615,6 +619,8 @@
   <div class="section-header">
     <div class="section-title">Incidents</div>
     <div class="filters">
+      <input type="text" id="filterSearch" list="incidentSuggestions" placeholder="Search incidents..." autocomplete="off">
+      <datalist id="incidentSuggestions"></datalist>
       <select id="filterSeverity">
         <option value="">All Severities</option>
         <option value="critical">Critical</option>
@@ -877,24 +883,32 @@ function setChartFilter(type, value) {
 
 function clearChartFilter(type) {
   const sel = type === 'severity' ? document.getElementById('filterSeverity')
-    : type === 'service' ? document.getElementById('filterService') : null;
+    : type === 'service' ? document.getElementById('filterService')
+    : type === 'search' ? document.getElementById('filterSearch') : null;
   if (sel) sel.value = '';
+  if (type === 'search') updateSearchSuggestions('');
   applyFilters();
   renderActiveFilters();
 }
 
 function clearAllChartFilters() {
+  document.getElementById('filterSearch').value = '';
   document.getElementById('filterSeverity').value = '';
   document.getElementById('filterService').value = '';
+  updateSearchSuggestions('');
   renderActiveFilters();
   applyFilters();
 }
 
 function renderActiveFilters() {
   const container = document.getElementById('activeFilters');
+  const search = document.getElementById('filterSearch').value.trim();
   const severity = document.getElementById('filterSeverity').value;
   const service = document.getElementById('filterService').value;
   let chips = '';
+  if (search) {
+    chips += `<span class="filter-chip chart-active">Search: ${search} <span class="chip-remove" onclick="clearChartFilter('search')">&times;</span></span>`;
+  }
   if (severity) {
     chips += `<span class="filter-chip chart-active">Severity: ${severity} <span class="chip-remove" onclick="clearChartFilter('severity')">&times;</span></span>`;
   }
@@ -908,11 +922,20 @@ function renderActiveFilters() {
 }
 
 function applyFilters(resetPage = true) {
+  const searchFilter = document.getElementById('filterSearch').value.trim().toLowerCase();
   const severityFilter = document.getElementById('filterSeverity').value;
   const statusFilter = document.getElementById('filterStatus').value;
   const serviceFilter = document.getElementById('filterService').value;
 
   let filtered = allIncidents;
+  if (searchFilter) {
+    filtered = filtered.filter(i =>
+      String(i.id).includes(searchFilter) ||
+      (i.title && i.title.toLowerCase().includes(searchFilter)) ||
+      (i.service && i.service.toLowerCase().includes(searchFilter)) ||
+      (i.description && i.description.toLowerCase().includes(searchFilter))
+    );
+  }
   if (severityFilter) filtered = filtered.filter(i => i.severity === severityFilter);
   if (statusFilter) filtered = filtered.filter(i => i.status === statusFilter);
   if (serviceFilter) filtered = filtered.filter(i => i.service === serviceFilter);
@@ -1086,6 +1109,25 @@ async function loadServiceFilter() {
   } catch (e) {}
 }
 
+function updateSearchSuggestions(query) {
+  const list = document.getElementById('incidentSuggestions');
+  const q = query.trim().toLowerCase();
+  if (!q) {
+    list.innerHTML = '';
+    return;
+  }
+  const seen = new Set();
+  const suggestions = [];
+  for (const inc of allIncidents) {
+    if (inc.title && inc.title.toLowerCase().includes(q) && !seen.has(inc.title)) {
+      seen.add(inc.title);
+      suggestions.push(inc.title);
+      if (suggestions.length >= 10) break;
+    }
+  }
+  list.innerHTML = suggestions.map(s => `<option value="${s.replace(/"/g, '&quot;')}"></option>`).join('');
+}
+
 async function init() {
   updateClock();
   setInterval(updateClock, 30000);
@@ -1098,6 +1140,11 @@ async function init() {
       renderActiveFilters();
       applyFilters();
     });
+  });
+  document.getElementById('filterSearch').addEventListener('input', (e) => {
+    updateSearchSuggestions(e.target.value);
+    renderActiveFilters();
+    applyFilters();
   });
   await refreshAll();
 }
