@@ -1,0 +1,25 @@
+incidents-dashboard/frontend/index.html
+  s_565ff26a1b9b39::t_9ab69bf5bc41db 1023-1026
+  s_565ff26a1b9b39::t_63666fa30d29be 775,777-778
+  s_565ff26a1b9b39::t_6532b846054ac3 1048-1052
+  s_565ff26a1b9b39::t_86c3bd9766842a 863-894
+  s_565ff26a1b9b39::t_2867c75e0fb8a9 943-979
+  s_565ff26a1b9b39::t_ba6482c50bf0ec 730
+  s_565ff26a1b9b39::t_51b6298caea3be 900,910
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "88cf04f47f503bd473b51e5d26fb34a3cfc99a25",
+  "prompts": {},
+  "sessions": {
+    "s_565ff26a1b9b39": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_095a56860ffei3KD94d3hUQyFS",
+        "model": "xai/grok-3-mini"
+      },
+      "human_author": "iagocmar <iagocmar@ext.inditex.com>"
+    }
+  }
+}
