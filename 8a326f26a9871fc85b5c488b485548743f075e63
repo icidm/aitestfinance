@@ -1,0 +1,19 @@
+incidents-dashboard/frontend/index.html
+  s_20a809feb04f8d::t_ed6650c8449c60 341
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "8a326f26a9871fc85b5c488b485548743f075e63",
+  "prompts": {},
+  "sessions": {
+    "s_20a809feb04f8d": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "99ef4d21-f10d-4aa4-b08c-1ecd11a90a18",
+        "model": "gpt-5.3-codex"
+      },
+      "human_author": "iagocmar <iagocmar@ext.inditex.com>"
+    }
+  }
+}

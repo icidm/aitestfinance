@@ -1,0 +1,23 @@
+incidents-dashboard/frontend/index.html
+  s_05f632eaa11616::t_e0bea231c63603 836
+  s_05f632eaa11616::t_c3174031544bab 27-29,31-34
+  s_05f632eaa11616::t_aadfbe061b2712 764-766
+  s_05f632eaa11616::t_f7cf2856f19ba4 807
+  s_05f632eaa11616::t_a4152a651678df 392-395,397-399
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.14",
+  "base_commit_sha": "cef8d23c7f9b3cddcb73d3911046342e3fb2f802",
+  "prompts": {},
+  "sessions": {
+    "s_05f632eaa11616": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "30f53b82-21c0-4565-aba2-fa92ec11752a",
+        "model": "gpt-5.3-codex"
+      },
+      "human_author": "iagocmar <iagocmar@ext.inditex.com>"
+    }
+  }
+}
