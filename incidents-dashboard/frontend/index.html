@@ -727,16 +727,10 @@ async function refreshAll() {
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Loading';
   try {
-    const [statsData, timelineData, incidentsData, servicesData] = await Promise.all([
-      api('/api/stats'),
-      api('/api/incidents/timeline?days=14'),
+    const [incidentsData, servicesData] = await Promise.all([
       api('/api/incidents?limit=500'),
       api('/api/services'),
     ]);
-    renderStats(statsData);
-    renderTimelineChart(timelineData);
-    renderSeverityChart(statsData);
-    renderServiceChart(incidentsData);
     allIncidents = incidentsData.incidents;
     applyFilters();
     renderServices(servicesData);
@@ -778,17 +772,10 @@ function renderTimelineChart(data) {
       plugins: {
         legend: {
           position: 'top', labels: { boxWidth: 12, padding: 12, font: { size: 11, family: 'Inter' } },
-          onClick: (e, legendItem, legend) => {
+          onClick: (e, legendItem) => {
             const severity = legendItem.text.toLowerCase();
-            const ds = legend.chart.data.datasets[legendItem.datasetIndex];
-            const wasHidden = ds._chart ? ds.hidden : false;
-            legend.chart.toggleDataVisibility(legendItem.datasetIndex);
-            legend.chart.update();
-            if (!wasHidden) {
-              setChartFilter('severity', severity);
-            } else {
-              clearChartFilter('severity');
-            }
+            const active = document.getElementById('filterSeverity').value === severity;
+            if (active) clearChartFilter('severity'); else setChartFilter('severity', severity);
           },
         },
       },
@@ -873,12 +860,44 @@ function renderServiceChart(incidentsData) {
   });
 }
 
+function renderServiceChartFromFiltered(incidents) {
+  if (serviceChartInstance) serviceChartInstance.destroy();
+  const counts = {};
+  incidents.forEach(i => { counts[i.service] = (counts[i.service] || 0) + 1; });
+  const labels = Object.keys(counts);
+  const values = Object.values(counts);
+  const colors = ['#E30613', '#171717', '#A6291D', '#8C8577', '#4B6B4F', '#B8860B', '#525252', '#000000'];
+  const ctx = document.getElementById('serviceChart').getContext('2d');
+  serviceChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: labels.map((_, i) => colors[i % colors.length]), borderRadius: 3, borderSkipped: false }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      onClick: (e, elements) => {
+        if (elements.length > 0) {
+          const idx = elements[0].index;
+          const service = serviceChartInstance.data.labels[idx];
+          setChartFilter('service', service);
+        }
+      },
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10, family: 'Inter' } }, grid: { color: '#F0F0F0' } },
+        y: { grid: { display: false }, ticks: { font: { size: 10, family: 'Inter' } } },
+      },
+    },
+  });
+}
+
 function setChartFilter(type, value) {
   const sel = type === 'severity' ? document.getElementById('filterSeverity')
     : type === 'service' ? document.getElementById('filterService') : null;
   if (sel) sel.value = value;
-  applyFilters();
   renderActiveFilters();
+  applyFilters();
 }
 
 function clearChartFilter(type) {
@@ -887,8 +906,8 @@ function clearChartFilter(type) {
     : type === 'search' ? document.getElementById('filterSearch') : null;
   if (sel) sel.value = '';
   if (type === 'search') updateSearchSuggestions('');
-  applyFilters();
   renderActiveFilters();
+  applyFilters();
 }
 
 function clearAllChartFilters() {
@@ -919,6 +938,43 @@ function renderActiveFilters() {
     chips += `<button class="btn btn-outline btn-sm" onclick="clearAllChartFilters()" style="font-size:11px">Clear all</button>`;
   }
   container.innerHTML = chips;
+}
+
+function computeStats(incidents) {
+  const total = incidents.length;
+  const openCount = incidents.filter(i => i.status === 'open' || i.status === 'in_progress').length;
+  const resolvedCount = incidents.filter(i => i.status === 'resolved').length;
+  const criticalOpen = incidents.filter(i => i.severity === 'critical' && (i.status === 'open' || i.status === 'in_progress')).length;
+  const resolvedTimes = [];
+  incidents.forEach(i => {
+    if (i.status === 'resolved' && i.resolved_at && i.created_at) {
+      const diff = (new Date(i.resolved_at) - new Date(i.created_at)) / 60000;
+      if (diff > 0) resolvedTimes.push(diff);
+    }
+  });
+  const mttr = resolvedTimes.length ? Math.round(resolvedTimes.reduce((a, b) => a + b, 0) / resolvedTimes.length) : null;
+  const bySeverity = { critical: 0, high: 0, medium: 0, low: 0 };
+  const byStatus = { open: 0, in_progress: 0, resolved: 0 };
+  incidents.forEach(i => { bySeverity[i.severity]++; byStatus[i.status]++; });
+  return { total_incidents: total, open_incidents: openCount, resolved_incidents: resolvedCount, critical_open: criticalOpen, mttr_minutes: mttr, by_severity: bySeverity, by_status: byStatus };
+}
+
+function computeTimeline(incidents, days) {
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - (days || 14));
+  const filtered = incidents.filter(i => new Date(i.created_at) >= cutoff);
+  const buckets = {};
+  filtered.forEach(i => {
+    const day = i.created_at.slice(0, 10);
+    if (!buckets[day]) buckets[day] = { date: day, total: 0, critical: 0, high: 0, medium: 0, low: 0, resolved: 0 };
+    buckets[day].total++; buckets[day][i.severity]++; if (i.status === 'resolved') buckets[day].resolved++;
+  });
+  return Object.values(buckets).sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function computeServiceCounts(incidents) {
+  const counts = {};
+  incidents.forEach(i => { counts[i.service] = (counts[i.service] || 0) + 1; });
+  return counts;
 }
 
 function applyFilters(resetPage = true) {
@@ -964,6 +1020,10 @@ function applyFilters(resetPage = true) {
 
   if (filtered.length === 0) {
     tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><p>No incidents found matching filters.</p></div></td></tr>';
+    renderStats(computeStats(filtered));
+    renderTimelineChart(computeTimeline(filtered));
+    renderSeverityChart(computeStats(filtered));
+    renderServiceChartFromFiltered(filtered);
     return;
   }
 
@@ -985,6 +1045,11 @@ function applyFilters(resetPage = true) {
     `;
     tbody.appendChild(tr);
   });
+
+  renderStats(computeStats(filtered));
+  renderTimelineChart(computeTimeline(filtered));
+  renderSeverityChart(computeStats(filtered));
+  renderServiceChartFromFiltered(filtered);
 }
 
 function renderPagination(total, pageStart, visibleCount, totalPages) {
