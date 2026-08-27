@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: incidents
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  api:
+    build: ./incidents-dashboard/backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/incidents
+      DATABASE_URL_SYNC: postgresql+psycopg2://postgres:postgres@postgres:5432/incidents
+      SECRET_KEY: "change-me-please-32-chars-minimum-secret-key!"
+      CORS_ORIGINS: "http://localhost:8000,http://localhost:3000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - artifacts:/app/artifacts
+    cap_drop:
+      - ALL
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./incidents-dashboard/backend/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+volumes:
+  pgdata:
+  artifacts:

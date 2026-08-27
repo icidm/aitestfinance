@@ -5,40 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Inditex - Incident Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
   :root {
-    --inditex-black: #000000;
-    --inditex-red: #E30613;
+    /* Paleta alineada con el deck corporativo (azul/lila) */
+    --accent: #5560E8;
+    --accent-dark: #3E48C4;
+    --accent-soft: #EEF0FB;
+    --ink: #1E2A3B;
+    --body: #57637A;
+    --muted: #8A94A8;
+
+    /* Alias heredados (remapeados a la nueva paleta) */
+    --inditex-black: #1E2A3B;
+    --inditex-red: #5560E8;
     --inditex-white: #FFFFFF;
-    --gray-50: #FAFAFA;
-    --gray-100: #F5F5F5;
-    --gray-200: #E5E5E5;
-    --gray-300: #D4D4D4;
-    --gray-400: #A3A3A3;
-    --gray-500: #737373;
-    --gray-600: #525252;
-    --gray-700: #404040;
-    --gray-800: #262626;
-    --gray-900: #171717;
-    --severity-critical: #E30613;
-    --severity-high: #A6291D;
-    --severity-medium: #B8860B;
-    --severity-low: #4B6B4F;
-    --status-open: #E30613;
-    --status-progress: #B8860B;
-    --status-resolved: #4B6B4F;
-    --health-healthy: #4B6B4F;
-    --health-degraded: #B8860B;
-    --health-down: #E30613;
+    --gray-50: #F7F8FC;
+    --gray-100: #F2F4F8;
+    --gray-200: #E4E7F0;
+    --gray-300: #D5DAE6;
+    --gray-400: #8A94A8;
+    --gray-500: #57637A;
+    --gray-600: #4B5771;
+    --gray-700: #3A4560;
+    --gray-800: #2A3547;
+    --gray-900: #1E2A3B;
+    --severity-critical: #E13D5B;
+    --severity-high: #E87A3D;
+    --severity-medium: #E0B03D;
+    --severity-low: #3DA86E;
+    --status-open: #E13D5B;
+    --status-progress: #E0B03D;
+    --status-resolved: #2F9E64;
+    --health-healthy: #2F9E64;
+    --health-degraded: #E0B03D;
+    --health-down: #E13D5B;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Carlito', 'Calibri', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--gray-50);
     color: var(--gray-900);
     line-height: 1.5;
@@ -46,8 +56,8 @@
   }
 
   .header {
-    background: var(--inditex-black);
-    color: var(--inditex-white);
+    background: var(--inditex-white);
+    color: var(--ink);
     padding: 0 32px;
     height: 64px;
     display: flex;
@@ -56,6 +66,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
+    border-bottom: 1px solid var(--gray-200);
   }
 
   .header-left {
@@ -71,19 +82,20 @@
     font-weight: 700;
     font-size: 20px;
     letter-spacing: 1px;
+    color: var(--ink);
   }
 
   .header-brand .inditex {
-    color: var(--inditex-red);
+    color: var(--accent);
   }
 
   .header-brand .divider {
-    color: var(--gray-600);
+    color: var(--gray-300);
     font-weight: 300;
   }
 
   .header-brand .subtitle {
-    color: var(--gray-300);
+    color: var(--muted);
     font-weight: 400;
     font-size: 14px;
     letter-spacing: 0;
@@ -93,6 +105,56 @@
     display: flex;
     align-items: center;
     gap: 16px;
+  }
+
+  .lang-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    background: var(--inditex-white);
+  }
+
+  .lang-btn {
+    width: 30px;
+    height: 22px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .lang-btn:hover {
+    background: var(--accent-soft);
+  }
+
+  .lang-btn.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(85,96,232,0.18) inset;
+  }
+
+  .flag-icon {
+    width: 18px;
+    height: 12px;
+    border-radius: 2px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.12);
+  }
+
+  .flag-en {
+    background:
+      linear-gradient(90deg, transparent 42%, #c8102e 42%, #c8102e 58%, transparent 58%),
+      linear-gradient(transparent 40%, #c8102e 40%, #c8102e 60%, transparent 60%),
+      #012169;
+  }
+
+  .flag-es {
+    background: linear-gradient(#aa151b 0 25%, #f1bf00 25% 75%, #aa151b 75% 100%);
   }
 
   .header-time {
@@ -116,12 +178,12 @@
   }
 
   .btn-primary {
-    background: var(--inditex-red);
+    background: var(--accent);
     color: var(--inditex-white);
   }
 
   .btn-primary:hover {
-    background: #B80510;
+    background: var(--accent-dark);
   }
 
   .btn-primary:disabled {
@@ -131,13 +193,14 @@
 
   .btn-outline {
     background: transparent;
-    color: var(--gray-400);
-    border: 1px solid var(--gray-700);
+    color: var(--body);
+    border: 1px solid var(--gray-300);
   }
 
   .btn-outline:hover {
-    background: var(--gray-800);
-    color: var(--inditex-white);
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-color: var(--accent);
   }
 
   .btn-sm {
@@ -171,31 +234,44 @@
   }
 
   .kpi-card {
+    position: relative;
     background: var(--inditex-white);
     border: 1px solid var(--gray-200);
     border-radius: 8px;
-    padding: 20px;
-    transition: box-shadow 0.2s ease;
+    padding: 22px 20px 20px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .kpi-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent);
   }
 
   .kpi-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    box-shadow: 0 6px 18px rgba(85,96,232,0.10);
+    transform: translateY(-1px);
   }
 
   .kpi-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--gray-500);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     margin-bottom: 8px;
   }
 
   .kpi-value {
-    font-size: 32px;
+    font-size: 34px;
     font-weight: 700;
     line-height: 1.1;
-    color: var(--inditex-black);
+    color: var(--ink);
   }
 
   .kpi-value .kpi-unit {
@@ -212,7 +288,7 @@
   }
 
   .kpi-sub .kpi-highlight {
-    color: var(--inditex-red);
+    color: var(--accent);
     font-weight: 600;
   }
 
@@ -393,14 +469,14 @@
     text-transform: uppercase;
   }
 
-  .badge-critical { background: #FDECEA; color: var(--severity-critical); }
-  .badge-high { background: #F5E6E3; color: var(--severity-high); }
-  .badge-medium { background: #FBF3DE; color: var(--severity-medium); }
-  .badge-low { background: #EAF1EA; color: var(--severity-low); }
+  .badge-critical { background: #FCE8EC; color: var(--severity-critical); }
+  .badge-high { background: #FBEDE2; color: var(--severity-high); }
+  .badge-medium { background: #FAF3DE; color: #A87F17; }
+  .badge-low { background: #E6F4EC; color: var(--severity-low); }
 
-  .badge-open { background: #FDECEA; color: var(--status-open); }
-  .badge-in_progress { background: #FBF3DE; color: var(--status-progress); }
-  .badge-resolved { background: #EAF1EA; color: var(--status-resolved); }
+  .badge-open { background: #FCE8EC; color: var(--status-open); }
+  .badge-in_progress { background: #FAF3DE; color: #A87F17; }
+  .badge-resolved { background: #E6F4EC; color: var(--status-resolved); }
 
   .status-dot {
     display: inline-block;
@@ -504,13 +580,13 @@
   }
 
   .filter-chip.chart-active {
-    background: #FEF2F2;
-    border-color: var(--inditex-red);
-    color: var(--inditex-red);
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   .filter-chip.chart-active .chip-remove {
-    color: var(--inditex-red);
+    color: var(--accent);
   }
 
   .toast {
@@ -563,10 +639,18 @@
     </div>
   </div>
   <div class="header-right">
+    <div class="lang-switcher" role="group" aria-label="Language" id="languageSwitcher">
+      <button class="lang-btn" id="langBtnEn" type="button" data-lang="en" aria-label="English" title="English">
+        <span class="flag-icon flag-en" aria-hidden="true"></span>
+      </button>
+      <button class="lang-btn" id="langBtnEs" type="button" data-lang="es" aria-label="Español" title="Español">
+        <span class="flag-icon flag-es" aria-hidden="true"></span>
+      </button>
+    </div>
     <span class="header-time" id="headerTime"></span>
     <button class="btn btn-primary" id="refreshBtn" onclick="refreshAll()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15.364-6.364L21 8M3 22v-6h6M21 12a9 9 0 0 1-15.364 6.364L3 16"/></svg>
-      Refresh
+      <span id="refreshBtnText">Refresh</span>
     </button>
   </div>
 </header>
@@ -574,22 +658,22 @@
 <main class="container">
   <div class="kpi-grid" id="kpiGrid">
     <div class="kpi-card">
-      <div class="kpi-label">Total Incidents</div>
+      <div class="kpi-label" id="kpiTotalLabel">Total Incidents</div>
       <div class="kpi-value" id="kpiTotal">--</div>
       <div class="kpi-sub" id="kpiTotalSub"></div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-label">Open</div>
+      <div class="kpi-label" id="kpiOpenLabel">Open</div>
       <div class="kpi-value" id="kpiOpen">--</div>
       <div class="kpi-sub" id="kpiOpenSub"></div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-label">MTTR</div>
+      <div class="kpi-label" id="kpiMttrLabel">MTTR</div>
       <div class="kpi-value" id="kpiMttr">-- <span class="kpi-unit">min</span></div>
-      <div class="kpi-sub">Mean time to resolve</div>
+      <div class="kpi-sub" id="kpiMttrSub">Mean time to resolve</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-label">Critical Open</div>
+      <div class="kpi-label" id="kpiCriticalLabel">Critical Open</div>
       <div class="kpi-value" id="kpiCritical">--</div>
       <div class="kpi-sub" id="kpiCriticalSub"></div>
     </div>
@@ -597,19 +681,19 @@
 
   <div class="charts-grid">
     <div class="chart-card">
-      <div class="chart-title">Incidents over time <span class="chart-click-hint">(click legend to filter)</span></div>
+      <div class="chart-title"><span id="timelineTitle">Incidents over time</span> <span class="chart-click-hint" id="timelineHint">(click legend to filter)</span></div>
       <div class="chart-container timeline">
         <canvas id="timelineChart"></canvas>
       </div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">By Severity <span class="chart-click-hint">(click slice to filter)</span></div>
+      <div class="chart-title"><span id="severityTitle">By Severity</span> <span class="chart-click-hint" id="severityHint">(click slice to filter)</span></div>
       <div class="chart-container">
         <canvas id="severityChart"></canvas>
       </div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">By Service <span class="chart-click-hint">(click bar to filter)</span></div>
+      <div class="chart-title"><span id="serviceTitle">By Service</span> <span class="chart-click-hint" id="serviceHint">(click bar to filter)</span></div>
       <div class="chart-container">
         <canvas id="serviceChart"></canvas>
       </div>
@@ -617,31 +701,35 @@
   </div>
 
   <div class="section-header">
-    <div class="section-title">Incidents</div>
+    <div class="section-title" id="incidentsTitle">Incidents</div>
     <div class="filters">
       <input type="text" id="filterSearch" list="incidentSuggestions" placeholder="Search incidents..." autocomplete="off">
       <datalist id="incidentSuggestions"></datalist>
       <select id="filterSeverity">
-        <option value="">All Severities</option>
-        <option value="critical">Critical</option>
-        <option value="high">High</option>
-        <option value="medium">Medium</option>
-        <option value="low">Low</option>
+        <option value="" id="filterSeverityAll">All Severities</option>
+        <option value="critical" id="filterSeverityCritical">Critical</option>
+        <option value="high" id="filterSeverityHigh">High</option>
+        <option value="medium" id="filterSeverityMedium">Medium</option>
+        <option value="low" id="filterSeverityLow">Low</option>
       </select>
       <select id="filterStatus">
-        <option value="">All Status</option>
-        <option value="open">Open</option>
-        <option value="in_progress">In Progress</option>
-        <option value="resolved">Resolved</option>
+        <option value="" id="filterStatusAll">All Status</option>
+        <option value="open" id="filterStatusOpen">Open</option>
+        <option value="in_progress" id="filterStatusProgress">In Progress</option>
+        <option value="resolved" id="filterStatusResolved">Resolved</option>
       </select>
       <select id="filterService">
-        <option value="">All Services</option>
+        <option value="" id="filterServiceAll">All Services</option>
       </select>
       <div class="active-filters" id="activeFilters"></div>
-      <button class="btn btn-outline btn-sm" onclick="applyFilters()">Apply</button>
-      <button class="btn btn-primary btn-sm" onclick="exportExcel()" title="Export filtered incidents to Excel">
+      <button class="btn btn-outline btn-sm" id="applyBtn" onclick="applyFilters()">Apply</button>
+      <button class="btn btn-primary btn-sm" id="exportExcelBtn" onclick="exportExcel()" title="Export filtered incidents to Excel">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Excel
+        <span id="exportExcelLabel">Excel</span>
+      </button>
+      <button class="btn btn-primary btn-sm" id="exportPptxBtn" onclick="exportPptx()" title="Export filtered dashboard to PowerPoint">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        <span id="exportPptxLabel">PPTX</span>
       </button>
     </div>
   </div>
@@ -651,12 +739,12 @@
       <thead>
         <tr>
           <th class="sortable" data-sort="id">ID<span class="sort-arrow">&#9650;</span></th>
-          <th class="sortable" data-sort="title">Title<span class="sort-arrow">&#9650;</span></th>
-          <th class="sortable" data-sort="service">Service<span class="sort-arrow">&#9650;</span></th>
-          <th class="sortable" data-sort="severity">Severity<span class="sort-arrow">&#9650;</span></th>
-          <th class="sortable" data-sort="status">Status<span class="sort-arrow">&#9650;</span></th>
-          <th class="sortable" data-sort="created_at">Created<span class="sort-arrow">&#9650;</span></th>
-          <th>Action</th>
+          <th class="sortable" data-sort="title" id="thTitle">Title<span class="sort-arrow">&#9650;</span></th>
+          <th class="sortable" data-sort="service" id="thService">Service<span class="sort-arrow">&#9650;</span></th>
+          <th class="sortable" data-sort="severity" id="thSeverity">Severity<span class="sort-arrow">&#9650;</span></th>
+          <th class="sortable" data-sort="status" id="thStatus">Status<span class="sort-arrow">&#9650;</span></th>
+          <th class="sortable" data-sort="created_at" id="thCreated">Created<span class="sort-arrow">&#9650;</span></th>
+          <th id="thAction">Action</th>
         </tr>
       </thead>
       <tbody id="incidentsBody">
@@ -666,7 +754,7 @@
     <div class="pagination" id="incidentPagination">
       <span id="paginationSummary">0 incidents</span>
       <div class="pagination-controls">
-        <label for="pageSize">Rows</label>
+        <label for="pageSize" id="rowsLabel">Rows</label>
         <select id="pageSize" onchange="changePageSize(this.value)">
           <option value="10">10</option>
           <option value="25" selected>25</option>
@@ -681,7 +769,7 @@
 
   <div style="margin-top:24px">
     <div class="section-header">
-      <div class="section-title">Services Health</div>
+      <div class="section-title" id="servicesHealthTitle">Services Health</div>
     </div>
     <div class="services-grid" id="servicesGrid">
     </div>
@@ -692,6 +780,150 @@
 
 <script>
 const API = '';
+const TIMELINE_WINDOW_DAYS = 14;
+const SEVERITY_KEYS = ['critical', 'high', 'medium', 'low'];
+const LANGUAGES = {
+  en: {
+    locale: 'en-GB',
+    titleSuffix: 'Incident Dashboard',
+    refresh: 'Refresh',
+    loading: 'Loading',
+    languageAria: 'Language',
+    languageEnglish: 'English',
+    languageSpanish: 'Spanish',
+    kpiTotalLabel: 'Total Incidents',
+    kpiOpenLabel: 'Open',
+    kpiMttrLabel: 'MTTR',
+    kpiMttrSub: 'Mean time to resolve',
+    kpiCriticalLabel: 'Critical Open',
+    timelineTitle: 'Incidents over time',
+    timelineHint: '(click legend to filter)',
+    severityTitle: 'By Severity',
+    severityHint: '(click slice to filter)',
+    serviceTitle: 'By Service',
+    serviceHint: '(click bar to filter)',
+    incidentsTitle: 'Incidents',
+    servicesHealthTitle: 'Services Health',
+    searchPlaceholder: 'Search incidents...',
+    allSeverities: 'All Severities',
+    allStatus: 'All Status',
+    allServices: 'All Services',
+    apply: 'Apply',
+    excelTooltip: 'Export filtered incidents to Excel',
+    pptxTooltip: 'Export filtered dashboard to PowerPoint',
+    thTitle: 'Title',
+    thService: 'Service',
+    thSeverity: 'Severity',
+    thStatus: 'Status',
+    thCreated: 'Created',
+    thAction: 'Action',
+    rows: 'Rows',
+    previous: 'Previous',
+    next: 'Next',
+    statusOpen: 'Open',
+    statusInProgress: 'In progress',
+    statusResolved: 'Resolved',
+    severityCritical: 'Critical',
+    severityHigh: 'High',
+    severityMedium: 'Medium',
+    severityLow: 'Low',
+    activeSearch: 'Search',
+    activeSeverity: 'Severity',
+    activeService: 'Service',
+    clearAll: 'Clear all',
+    noIncidents: 'No incidents found matching filters.',
+    loadingIncidents: 'Loading incidents...',
+    resolvedBadge: 'Resolved',
+    resolveAction: 'Resolve',
+    kpiResolvedSub: '{resolved} resolved',
+    kpiInProgressSub: '{inProgress} in progress',
+    kpiCriticalSub: 'out of {critical} total critical',
+    resolvedWord: 'resolved',
+    inProgressWord: 'in progress',
+    paginationSummary: '{first}-{last} of {total} incidents',
+    pageIndicator: 'Page {page} of {totalPages}',
+    toastLoadError: 'Error loading data: {error}',
+    toastResolveOk: 'Incident #{id} resolved',
+    toastResolveError: 'Error resolving incident: {error}',
+    toastPptx: 'Downloading report with active filters ({days}d window)...',
+    toastExcel: 'Exported {count} incidents to Excel ({days}d window)',
+    serviceMeta: '{uptime}% uptime - {active} active',
+    healthy: 'healthy',
+    degraded: 'degraded',
+    down: 'down',
+  },
+  es: {
+    locale: 'es-ES',
+    titleSuffix: 'Panel de Incidencias',
+    refresh: 'Actualizar',
+    loading: 'Cargando',
+    languageAria: 'Idioma',
+    languageEnglish: 'Ingles',
+    languageSpanish: 'Espanol',
+    kpiTotalLabel: 'Incidencias Totales',
+    kpiOpenLabel: 'Abiertas',
+    kpiMttrLabel: 'MTTR',
+    kpiMttrSub: 'Tiempo medio de resolución',
+    kpiCriticalLabel: 'Críticas Abiertas',
+    timelineTitle: 'Incidencias en el tiempo',
+    timelineHint: '(haz clic en la leyenda para filtrar)',
+    severityTitle: 'Por Severidad',
+    severityHint: '(haz clic en el segmento para filtrar)',
+    serviceTitle: 'Por Servicio',
+    serviceHint: '(haz clic en la barra para filtrar)',
+    incidentsTitle: 'Incidencias',
+    servicesHealthTitle: 'Salud de Servicios',
+    searchPlaceholder: 'Buscar incidencias...',
+    allSeverities: 'Todas las Severidades',
+    allStatus: 'Todos los Estados',
+    allServices: 'Todos los Servicios',
+    apply: 'Aplicar',
+    excelTooltip: 'Exportar incidencias filtradas a Excel',
+    pptxTooltip: 'Exportar panel filtrado a PowerPoint',
+    thTitle: 'Titulo',
+    thService: 'Servicio',
+    thSeverity: 'Severidad',
+    thStatus: 'Estado',
+    thCreated: 'Creado',
+    thAction: 'Accion',
+    rows: 'Filas',
+    previous: 'Anterior',
+    next: 'Siguiente',
+    statusOpen: 'Abierta',
+    statusInProgress: 'En progreso',
+    statusResolved: 'Resuelta',
+    severityCritical: 'Critica',
+    severityHigh: 'Alta',
+    severityMedium: 'Media',
+    severityLow: 'Baja',
+    activeSearch: 'Busqueda',
+    activeSeverity: 'Severidad',
+    activeService: 'Servicio',
+    clearAll: 'Limpiar todo',
+    noIncidents: 'No se encontraron incidencias con esos filtros.',
+    loadingIncidents: 'Cargando incidencias...',
+    resolvedBadge: 'Resuelta',
+    resolveAction: 'Resolver',
+    kpiResolvedSub: '{resolved} resueltas',
+    kpiInProgressSub: '{inProgress} en progreso',
+    kpiCriticalSub: 'de {critical} criticas totales',
+    resolvedWord: 'resueltas',
+    inProgressWord: 'en progreso',
+    paginationSummary: '{first}-{last} de {total} incidencias',
+    pageIndicator: 'Pagina {page} de {totalPages}',
+    toastLoadError: 'Error al cargar datos: {error}',
+    toastResolveOk: 'Incidencia #{id} resuelta',
+    toastResolveError: 'Error al resolver incidencia: {error}',
+    toastPptx: 'Descargando informe con filtros activos (ventana de {days} dias)...',
+    toastExcel: 'Se exportaron {count} incidencias a Excel (ventana de {days} dias)',
+    serviceMeta: '{uptime}% disponibilidad - {active} activas',
+    healthy: 'saludable',
+    degraded: 'degradado',
+    down: 'caido',
+  },
+};
+
+let currentLanguage = 'en';
 let timelineChartInstance = null;
 let severityChartInstance = null;
 let serviceChartInstance = null;
@@ -702,6 +934,88 @@ let sortDir = 'desc';
 let currentPage = 1;
 let pageSize = 25;
 
+function t(key, vars = {}) {
+  let value = (LANGUAGES[currentLanguage] && LANGUAGES[currentLanguage][key]) || LANGUAGES.en[key] || key;
+  Object.entries(vars).forEach(([k, v]) => {
+    value = value.replaceAll(`{${k}}`, String(v));
+  });
+  return value;
+}
+
+function statusLabel(status) {
+  if (status === 'open') return t('statusOpen');
+  if (status === 'in_progress') return t('statusInProgress');
+  return t('statusResolved');
+}
+
+function severityLabel(severity) {
+  if (severity === 'critical') return t('severityCritical');
+  if (severity === 'high') return t('severityHigh');
+  if (severity === 'medium') return t('severityMedium');
+  return t('severityLow');
+}
+
+function applyTranslations() {
+  document.title = `INDITEX | ${t('titleSuffix')}`;
+  document.getElementById('languageSwitcher').setAttribute('aria-label', t('languageAria'));
+  document.getElementById('langBtnEn').setAttribute('aria-label', t('languageEnglish'));
+  document.getElementById('langBtnEn').setAttribute('title', t('languageEnglish'));
+  document.getElementById('langBtnEs').setAttribute('aria-label', t('languageSpanish'));
+  document.getElementById('langBtnEs').setAttribute('title', t('languageSpanish'));
+  document.getElementById('refreshBtnText').textContent = t('refresh');
+  document.getElementById('kpiTotalLabel').textContent = t('kpiTotalLabel');
+  document.getElementById('kpiOpenLabel').textContent = t('kpiOpenLabel');
+  document.getElementById('kpiMttrLabel').textContent = t('kpiMttrLabel');
+  document.getElementById('kpiMttrSub').textContent = t('kpiMttrSub');
+  document.getElementById('kpiCriticalLabel').textContent = t('kpiCriticalLabel');
+  document.getElementById('timelineTitle').textContent = t('timelineTitle');
+  document.getElementById('timelineHint').textContent = t('timelineHint');
+  document.getElementById('severityTitle').textContent = t('severityTitle');
+  document.getElementById('severityHint').textContent = t('severityHint');
+  document.getElementById('serviceTitle').textContent = t('serviceTitle');
+  document.getElementById('serviceHint').textContent = t('serviceHint');
+  document.getElementById('incidentsTitle').textContent = t('incidentsTitle');
+  document.getElementById('servicesHealthTitle').textContent = t('servicesHealthTitle');
+  document.getElementById('filterSearch').placeholder = t('searchPlaceholder');
+  document.getElementById('filterSeverityAll').textContent = t('allSeverities');
+  document.getElementById('filterSeverityCritical').textContent = t('severityCritical');
+  document.getElementById('filterSeverityHigh').textContent = t('severityHigh');
+  document.getElementById('filterSeverityMedium').textContent = t('severityMedium');
+  document.getElementById('filterSeverityLow').textContent = t('severityLow');
+  document.getElementById('filterStatusAll').textContent = t('allStatus');
+  document.getElementById('filterStatusOpen').textContent = t('statusOpen');
+  document.getElementById('filterStatusProgress').textContent = t('statusInProgress');
+  document.getElementById('filterStatusResolved').textContent = t('statusResolved');
+  document.getElementById('filterServiceAll').textContent = t('allServices');
+  document.getElementById('applyBtn').textContent = t('apply');
+  document.getElementById('exportExcelBtn').title = t('excelTooltip');
+  document.getElementById('exportPptxBtn').title = t('pptxTooltip');
+  document.getElementById('thTitle').childNodes[0].textContent = t('thTitle');
+  document.getElementById('thService').childNodes[0].textContent = t('thService');
+  document.getElementById('thSeverity').childNodes[0].textContent = t('thSeverity');
+  document.getElementById('thStatus').childNodes[0].textContent = t('thStatus');
+  document.getElementById('thCreated').childNodes[0].textContent = t('thCreated');
+  document.getElementById('thAction').textContent = t('thAction');
+  document.getElementById('rowsLabel').textContent = t('rows');
+  document.getElementById('previousPage').textContent = t('previous');
+  document.getElementById('nextPage').textContent = t('next');
+}
+
+function updateLanguageButtons() {
+  document.getElementById('langBtnEn').classList.toggle('active', currentLanguage === 'en');
+  document.getElementById('langBtnEs').classList.toggle('active', currentLanguage === 'es');
+}
+
+function setLanguage(lang) {
+  currentLanguage = lang === 'es' ? 'es' : 'en';
+  localStorage.setItem('dashboardLanguage', currentLanguage);
+  updateLanguageButtons();
+  applyTranslations();
+  updateClock();
+  renderActiveFilters();
+  applyFilters(false);
+}
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -709,46 +1023,142 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
+async function getAccessToken(){ return localStorage.getItem('access_token'); }
+async function loginDefault(){
+  const creds = {username:'viewer', password:'Viewer123!'};
+  try{
+    const res = await fetch(`${API}/api/auth/login`, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: new URLSearchParams(creds)});
+    if(res.ok){ const d=await res.json(); localStorage.setItem('access_token', d.access_token); localStorage.setItem('refresh_token', d.refresh_token); return d.access_token; }
+  }catch(e){}
+  return null;
+}
 async function api(url, opts = {}) {
-  const res = await fetch(`${API}${url}`, {
-    ...opts,
-    headers: { 'Content-Type': 'application/json', ...opts.headers },
-  });
+  let token = await getAccessToken();
+  if(!token) token = await loginDefault();
+  const headers = { 'Content-Type': 'application/json', ...opts.headers };
+  if(token) headers['Authorization'] = `Bearer ${token}`;
+  let res = await fetch(`${API}${url}`, { ...opts, headers });
+  if(res.status===401){
+    const refresh = localStorage.getItem('refresh_token');
+    if(refresh){
+      const r = await fetch(`${API}/api/auth/refresh`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({refresh_token: refresh})});
+      if(r.ok){ const d=await r.json(); localStorage.setItem('access_token', d.access_token); localStorage.setItem('refresh_token', d.refresh_token); headers['Authorization']=`Bearer ${d.access_token}`; res = await fetch(`${API}${url}`, {...opts, headers}); }
+    }
+    if(res.status===401){ // fallback login
+      token = await loginDefault(); if(token){ headers['Authorization']=`Bearer ${token}`; res = await fetch(`${API}${url}`, {...opts, headers});}
+    }
+  }
   if (!res.ok) throw new Error(`API error: ${res.status}`);
-  return res.json();
+  const ct = res.headers.get('content-type')||'';
+  if(ct.includes('application/json')) return res.json();
+  return res;
+}
+let nextCursor=null, hasMore=false, pageSize=25, cursorStack=[];
+async function fetchPaged(filters={}, cursor=null){
+  const params = new URLSearchParams({limit: pageSize, ...filters, ...(cursor?{cursor}:{})});
+  const data = await api(`/api/incidents?${params}`);
+  return data;
 }
 
 function updateClock() {
-  document.getElementById('headerTime').textContent = new Date().toLocaleString('en-GB', { hour12: false });
+  document.getElementById('headerTime').textContent = new Date().toLocaleString(LANGUAGES[currentLanguage].locale, { hour12: false });
 }
 
 async function refreshAll() {
   const btn = document.getElementById('refreshBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Loading';
+  btn.innerHTML = `<span class="spinner"></span> ${t('loading')}`;
   try {
-    const [incidentsData, servicesData] = await Promise.all([
-      api('/api/incidents?limit=500'),
-      api('/api/services'),
-    ]);
+    // Use cursor pagination server-side: fetch first page with current filters
+    const filters = getCurrentFilterParams();
+    const incidentsData = await fetchPaged(filters, null);
+    const servicesData = await api('/api/services');
+    const statsData = await api('/api/stats');
+    const timelineData = await api('/api/incidents/timeline?days=14');
     allIncidents = incidentsData.incidents;
+    nextCursor = incidentsData.next_cursor;
+    hasMore = incidentsData.has_more;
+    cursorStack = [];
     applyFilters();
     renderServices(servicesData);
+    renderStats(statsData);
+    renderTimelineChart(timelineData);
+    updatePaginationControls();
+    setupSSE(filters);
   } catch (e) {
-    showToast('Error loading data: ' + e.message);
+    showToast(t('toastLoadError', { error: e.message }));
   }
   btn.disabled = false;
-  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15.364-6.364L21 8M3 22v-6h6M21 12a9 9 0 0 1-15.364 6.364L3 16"/></svg> Refresh`;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15.364-6.364L21 8M3 22v-6h6M21 12a9 9 0 0 1-15.364 6.364L3 16"/></svg> <span id="refreshBtnText">${t('refresh')}</span>`;
 }
+function getCurrentFilterParams(){
+  const svc = document.getElementById('filterService')?.value || '';
+  const status = document.getElementById('filterStatus')?.value || '';
+  const severity = document.getElementById('filterSeverity')?.value || '';
+  const q = document.getElementById('searchInput')?.value?.trim() || '';
+  const p={}; if(status) p.status=status; if(severity) p.severity=severity; if(svc) p.service=svc; if(q) p.q=q; return p;
+}
+function updatePaginationControls(){
+  const prev = document.getElementById('previousPage'); const next = document.getElementById('nextPage');
+  if(prev) prev.disabled = cursorStack.length===0;
+  if(next) next.disabled = !hasMore;
+}
+async function goNext(){
+  if(!hasMore) return;
+  const filters=getCurrentFilterParams();
+  cursorStack.push(nextCursor);
+  // We keep current cursor; need previous cursor value - actually store stack of cursors
+  // Simplified: use nextCursor directly
+  const data = await fetchPaged(filters, nextCursor);
+  allIncidents = data.incidents; nextCursor=data.next_cursor; hasMore=data.has_more; applyFilters(); updatePaginationControls();
+}
+async function goPrev(){
+  if(cursorStack.length===0) return;
+  cursorStack.pop();
+  const prevCursor = cursorStack.length? cursorStack[cursorStack.length-1]: null;
+  const filters=getCurrentFilterParams();
+  const data = await fetchPaged(filters, prevCursor);
+  allIncidents = data.incidents; nextCursor=data.next_cursor; hasMore=data.has_more; applyFilters(); updatePaginationControls();
+}
+let es=null;
+function setupSSE(filters){
+  if(es) try{es.close()}catch(e){}
+  // EventSource cannot send Authorization header; use fetch+ReadableStream fallback if needed
+  const token = localStorage.getItem('access_token');
+  // Try EventSource with cookie not available; fallback to polling if no EventSource
+  if(typeof EventSource !== 'undefined' && token){
+    // Use fetch-stream fallback because token in header needed
+    // Polling fallback when EventSource unavailable documented
+    const params = new URLSearchParams(filters).toString();
+    const url = `${API}/api/incidents/stream?${params}`;
+    // Fetch streaming with auth header
+    (async()=>{
+      try{
+        const res = await fetch(url, {headers:{'Authorization':`Bearer ${token}`,'Accept':'text/event-stream'}});
+        if(!res.ok || !res.body) throw new Error('SSE failed');
+        const reader = res.body.getReader(); const decoder=new TextDecoder();
+        let buf='';
+        while(true){ const {done,value}=await reader.read(); if(done) break; buf+=decoder.decode(value,{stream:true}); const parts=buf.split('\n\n'); buf=parts.pop(); for(const part of parts){ if(part.startsWith('data:')){ try{ const ev=JSON.parse(part.slice(5).trim()); if(ev.type==='incident.create' || ev.type==='incident.resolve') refreshAll(); }catch(e){} } } }
+      }catch(e){ // fallback polling every 15s
+        setInterval(()=>refreshAll(),15000);
+      }
+    })();
+  } else {
+    // fallback polling
+    setInterval(()=>refreshAll(),15000);
+  }
+}
+// Wire pagination buttons
+document.addEventListener('DOMContentLoaded', ()=>{ const prev=document.getElementById('previousPage'); const nxt=document.getElementById('nextPage'); if(prev) prev.onclick=goPrev; if(nxt) nxt.onclick=goNext; const rs=document.getElementById('rowsSelect'); if(rs) rs.onchange=(e)=>{ pageSize=parseInt(e.target.value)||25; refreshAll(); }; });
 
 function renderStats(s) {
   document.getElementById('kpiTotal').textContent = s.total_incidents;
-  document.getElementById('kpiTotalSub').innerHTML = `<span class="kpi-highlight">${s.resolved_incidents}</span> resolved`;
+  document.getElementById('kpiTotalSub').innerHTML = `<span class="kpi-highlight">${s.resolved_incidents}</span> ${t('resolvedWord')}`;
   document.getElementById('kpiOpen').textContent = s.open_incidents;
-  document.getElementById('kpiOpenSub').innerHTML = `<span class="kpi-highlight">${s.by_status.in_progress}</span> in progress`;
+  document.getElementById('kpiOpenSub').innerHTML = `<span class="kpi-highlight">${s.by_status.in_progress}</span> ${t('inProgressWord')}`;
   document.getElementById('kpiMttr').innerHTML = s.mttr_minutes ? `${Math.round(s.mttr_minutes)} <span class="kpi-unit">min</span>` : '-- <span class="kpi-unit">min</span>';
   document.getElementById('kpiCritical').textContent = s.critical_open;
-  document.getElementById('kpiCriticalSub').innerHTML = `out of <span class="kpi-highlight">${s.by_severity.critical}</span> total critical`;
+  document.getElementById('kpiCriticalSub').innerHTML = t('kpiCriticalSub', { critical: `<span class="kpi-highlight">${s.by_severity.critical}</span>` });
 }
 
 function renderTimelineChart(data) {
@@ -760,10 +1170,10 @@ function renderTimelineChart(data) {
     data: {
       labels: data.map(d => d.date.slice(5)),
       datasets: [
-        { label: 'Critical', data: data.map(d => d.critical), borderColor: '#E30613', backgroundColor: 'rgba(227,6,19,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
-        { label: 'High', data: data.map(d => d.high), borderColor: '#A6291D', backgroundColor: 'rgba(166,41,29,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
-        { label: 'Medium', data: data.map(d => d.medium), borderColor: '#B8860B', backgroundColor: 'rgba(184,134,11,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
-        { label: 'Low', data: data.map(d => d.low), borderColor: '#4B6B4F', backgroundColor: 'rgba(75,107,79,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
+        { label: t('severityCritical'), severityKey: 'critical', data: data.map(d => d.critical), borderColor: '#E13D5B', backgroundColor: 'rgba(225,61,91,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
+        { label: t('severityHigh'), severityKey: 'high', data: data.map(d => d.high), borderColor: '#E87A3D', backgroundColor: 'rgba(232,122,61,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
+        { label: t('severityMedium'), severityKey: 'medium', data: data.map(d => d.medium), borderColor: '#E0B03D', backgroundColor: 'rgba(224,176,61,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
+        { label: t('severityLow'), severityKey: 'low', data: data.map(d => d.low), borderColor: '#3DA86E', backgroundColor: 'rgba(61,168,110,0.08)', tension: 0.3, fill: true, pointRadius: 3, borderWidth: 2 },
       ],
     },
     options: {
@@ -771,17 +1181,18 @@ function renderTimelineChart(data) {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: 'top', labels: { boxWidth: 12, padding: 12, font: { size: 11, family: 'Inter' } },
+          position: 'top', labels: { boxWidth: 12, padding: 12, font: { size: 11, family: 'Carlito' } },
           onClick: (e, legendItem) => {
-            const severity = legendItem.text.toLowerCase();
+            const dataset = timelineChartInstance.data.datasets[legendItem.datasetIndex];
+            const severity = dataset.severityKey;
             const active = document.getElementById('filterSeverity').value === severity;
             if (active) clearChartFilter('severity'); else setChartFilter('severity', severity);
           },
         },
       },
       scales: {
-        x: { grid: { display: false }, ticks: { font: { size: 11, family: 'Inter' } } },
-        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11, family: 'Inter' } }, grid: { color: '#F0F0F0' } },
+        x: { grid: { display: false }, ticks: { font: { size: 11, family: 'Carlito' } } },
+        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11, family: 'Carlito' } }, grid: { color: '#EEF0FB' } },
       },
     },
   });
@@ -794,10 +1205,10 @@ function renderSeverityChart(stats) {
   severityChartInstance = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: ['Critical', 'High', 'Medium', 'Low'],
+      labels: [t('severityCritical'), t('severityHigh'), t('severityMedium'), t('severityLow')],
       datasets: [{
         data: [stats.by_severity.critical, stats.by_severity.high, stats.by_severity.medium, stats.by_severity.low],
-        backgroundColor: ['#E30613', '#A6291D', '#B8860B', '#4B6B4F'],
+        backgroundColor: ['#E13D5B', '#E87A3D', '#E0B03D', '#3DA86E'],
         borderWidth: 0,
       }],
     },
@@ -808,12 +1219,12 @@ function renderSeverityChart(stats) {
       onClick: (e, elements) => {
         if (elements.length > 0) {
           const idx = elements[0].index;
-          const severity = severityChartInstance.data.labels[idx].toLowerCase();
+          const severity = SEVERITY_KEYS[idx];
           setChartFilter('severity', severity);
         }
       },
       plugins: {
-        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 8, font: { size: 11, family: 'Inter' } } },
+        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 8, font: { size: 11, family: 'Carlito' } } },
       },
     },
   });
@@ -826,7 +1237,7 @@ function renderServiceChart(incidentsData) {
   incidentsData.incidents.forEach(i => { counts[i.service] = (counts[i.service] || 0) + 1; });
   const labels = Object.keys(counts);
   const values = Object.values(counts);
-  const colors = ['#E30613', '#171717', '#A6291D', '#8C8577', '#4B6B4F', '#B8860B', '#525252', '#000000'];
+  const colors = ['#5560E8', '#7C86F0', '#3E48C4', '#A5ADF5', '#2A3547', '#8A94A8', '#6B76EC', '#1E2A3B'];
 
   const ctx = document.getElementById('serviceChart').getContext('2d');
   serviceChartInstance = new Chart(ctx, {
@@ -853,8 +1264,8 @@ function renderServiceChart(incidentsData) {
       },
       plugins: { legend: { display: false } },
       scales: {
-        x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10, family: 'Inter' } }, grid: { color: '#F0F0F0' } },
-        y: { grid: { display: false }, ticks: { font: { size: 10, family: 'Inter' } } },
+        x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10, family: 'Carlito' } }, grid: { color: '#EEF0FB' } },
+        y: { grid: { display: false }, ticks: { font: { size: 10, family: 'Carlito' } } },
       },
     },
   });
@@ -866,7 +1277,7 @@ function renderServiceChartFromFiltered(incidents) {
   incidents.forEach(i => { counts[i.service] = (counts[i.service] || 0) + 1; });
   const labels = Object.keys(counts);
   const values = Object.values(counts);
-  const colors = ['#E30613', '#171717', '#A6291D', '#8C8577', '#4B6B4F', '#B8860B', '#525252', '#000000'];
+  const colors = ['#5560E8', '#7C86F0', '#3E48C4', '#A5ADF5', '#2A3547', '#8A94A8', '#6B76EC', '#1E2A3B'];
   const ctx = document.getElementById('serviceChart').getContext('2d');
   serviceChartInstance = new Chart(ctx, {
     type: 'bar',
@@ -885,8 +1296,8 @@ function renderServiceChartFromFiltered(incidents) {
       },
       plugins: { legend: { display: false } },
       scales: {
-        x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10, family: 'Inter' } }, grid: { color: '#F0F0F0' } },
-        y: { grid: { display: false }, ticks: { font: { size: 10, family: 'Inter' } } },
+        x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10, family: 'Carlito' } }, grid: { color: '#EEF0FB' } },
+        y: { grid: { display: false }, ticks: { font: { size: 10, family: 'Carlito' } } },
       },
     },
   });
@@ -926,16 +1337,16 @@ function renderActiveFilters() {
   const service = document.getElementById('filterService').value;
   let chips = '';
   if (search) {
-    chips += `<span class="filter-chip chart-active">Search: ${search} <span class="chip-remove" onclick="clearChartFilter('search')">&times;</span></span>`;
+    chips += `<span class="filter-chip chart-active">${t('activeSearch')}: ${search} <span class="chip-remove" onclick="clearChartFilter('search')">&times;</span></span>`;
   }
   if (severity) {
-    chips += `<span class="filter-chip chart-active">Severity: ${severity} <span class="chip-remove" onclick="clearChartFilter('severity')">&times;</span></span>`;
+    chips += `<span class="filter-chip chart-active">${t('activeSeverity')}: ${severityLabel(severity)} <span class="chip-remove" onclick="clearChartFilter('severity')">&times;</span></span>`;
   }
   if (service) {
-    chips += `<span class="filter-chip chart-active">Service: ${service} <span class="chip-remove" onclick="clearChartFilter('service')">&times;</span></span>`;
+    chips += `<span class="filter-chip chart-active">${t('activeService')}: ${service} <span class="chip-remove" onclick="clearChartFilter('service')">&times;</span></span>`;
   }
   if (chips) {
-    chips += `<button class="btn btn-outline btn-sm" onclick="clearAllChartFilters()" style="font-size:11px">Clear all</button>`;
+    chips += `<button class="btn btn-outline btn-sm" onclick="clearAllChartFilters()" style="font-size:11px">${t('clearAll')}</button>`;
   }
   container.innerHTML = chips;
 }
@@ -960,15 +1371,59 @@ function computeStats(incidents) {
 }
 
 function computeTimeline(incidents, days) {
-  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - (days || 14));
-  const filtered = incidents.filter(i => new Date(i.created_at) >= cutoff);
+  const windowDays = Math.max(1, Number(days) || 14);
+  if (!incidents.length) return [];
+
+  // Anchor the timeline window to the newest incident so stale demo data still renders.
+  const latestTs = Math.max(...incidents.map(i => new Date(i.created_at).getTime()));
+  if (!Number.isFinite(latestTs)) return [];
+
+  const latestDay = new Date(latestTs);
+  latestDay.setHours(0, 0, 0, 0);
+  const endExclusive = new Date(latestDay);
+  endExclusive.setDate(endExclusive.getDate() + 1);
+
+  const cutoff = new Date(latestDay);
+  cutoff.setDate(cutoff.getDate() - (windowDays - 1));
+
   const buckets = {};
-  filtered.forEach(i => {
+  for (let d = new Date(cutoff); d <= latestDay; d.setDate(d.getDate() + 1)) {
+    const day = d.toISOString().slice(0, 10);
+    buckets[day] = { date: day, total: 0, critical: 0, high: 0, medium: 0, low: 0, resolved: 0 };
+  }
+
+  incidents.forEach(i => {
+    const created = new Date(i.created_at);
+    if (created < cutoff || created >= endExclusive) return;
     const day = i.created_at.slice(0, 10);
-    if (!buckets[day]) buckets[day] = { date: day, total: 0, critical: 0, high: 0, medium: 0, low: 0, resolved: 0 };
-    buckets[day].total++; buckets[day][i.severity]++; if (i.status === 'resolved') buckets[day].resolved++;
+    if (!buckets[day]) return;
+    buckets[day].total++;
+    buckets[day][i.severity]++;
+    if (i.status === 'resolved') buckets[day].resolved++;
   });
+
   return Object.values(buckets).sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function getWindowedIncidents(incidents, days = TIMELINE_WINDOW_DAYS) {
+  const windowDays = Math.max(1, Number(days) || TIMELINE_WINDOW_DAYS);
+  if (!incidents.length) return [];
+
+  const latestTs = Math.max(...incidents.map(i => new Date(i.created_at).getTime()));
+  if (!Number.isFinite(latestTs)) return [];
+
+  const latestDay = new Date(latestTs);
+  latestDay.setHours(0, 0, 0, 0);
+  const endExclusive = new Date(latestDay);
+  endExclusive.setDate(endExclusive.getDate() + 1);
+
+  const cutoff = new Date(latestDay);
+  cutoff.setDate(cutoff.getDate() - (windowDays - 1));
+
+  return incidents.filter(i => {
+    const created = new Date(i.created_at);
+    return created >= cutoff && created < endExclusive;
+  });
 }
 
 function computeServiceCounts(incidents) {
@@ -977,24 +1432,34 @@ function computeServiceCounts(incidents) {
   return counts;
 }
 
-function applyFilters(resetPage = true) {
-  const searchFilter = document.getElementById('filterSearch').value.trim().toLowerCase();
-  const severityFilter = document.getElementById('filterSeverity').value;
-  const statusFilter = document.getElementById('filterStatus').value;
-  const serviceFilter = document.getElementById('filterService').value;
+function getActiveFilters() {
+  return {
+    search: document.getElementById('filterSearch').value.trim().toLowerCase(),
+    severity: document.getElementById('filterSeverity').value,
+    status: document.getElementById('filterStatus').value,
+    service: document.getElementById('filterService').value,
+  };
+}
 
-  let filtered = allIncidents;
-  if (searchFilter) {
+function getFilteredIncidents(incidents, filters) {
+  let filtered = incidents;
+  if (filters.search) {
     filtered = filtered.filter(i =>
-      String(i.id).includes(searchFilter) ||
-      (i.title && i.title.toLowerCase().includes(searchFilter)) ||
-      (i.service && i.service.toLowerCase().includes(searchFilter)) ||
-      (i.description && i.description.toLowerCase().includes(searchFilter))
+      String(i.id).includes(filters.search) ||
+      (i.title && i.title.toLowerCase().includes(filters.search)) ||
+      (i.service && i.service.toLowerCase().includes(filters.search)) ||
+      (i.description && i.description.toLowerCase().includes(filters.search))
     );
   }
-  if (severityFilter) filtered = filtered.filter(i => i.severity === severityFilter);
-  if (statusFilter) filtered = filtered.filter(i => i.status === statusFilter);
-  if (serviceFilter) filtered = filtered.filter(i => i.service === serviceFilter);
+  if (filters.severity) filtered = filtered.filter(i => i.severity === filters.severity);
+  if (filters.status) filtered = filtered.filter(i => i.status === filters.status);
+  if (filters.service) filtered = filtered.filter(i => i.service === filters.service);
+  return filtered;
+}
+
+function applyFilters(resetPage = true) {
+  const filters = getActiveFilters();
+  let filtered = getFilteredIncidents(allIncidents, filters);
 
   filtered.sort((a, b) => {
     let va = a[sortBy], vb = b[sortBy];
@@ -1019,7 +1484,7 @@ function applyFilters(resetPage = true) {
   renderPagination(filtered.length, pageStart, pageIncidents.length, totalPages);
 
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><p>No incidents found matching filters.</p></div></td></tr>';
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><p>${t('noIncidents')}</p></div></td></tr>`;
     renderStats(computeStats(filtered));
     renderTimelineChart(computeTimeline(filtered));
     renderSeverityChart(computeStats(filtered));
@@ -1029,25 +1494,26 @@ function applyFilters(resetPage = true) {
 
   pageIncidents.forEach(inc => {
     const tr = document.createElement('tr');
-    const created = new Date(inc.created_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    const created = new Date(inc.created_at).toLocaleString(LANGUAGES[currentLanguage].locale, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
     const actionBtn = inc.status === 'resolved'
-      ? '<span style="color:var(--gray-400);font-size:12px">Resolved</span>'
-      : `<button class="btn btn-outline btn-sm" onclick="resolveIncident(${inc.id})">Resolve</button>`;
+      ? `<span style="color:var(--gray-400);font-size:12px">${t('resolvedBadge')}</span>`
+      : `<button class="btn btn-outline btn-sm" onclick="resolveIncident(${inc.id})">${t('resolveAction')}</button>`;
 
     tr.innerHTML = `
       <td style="font-weight:500;color:var(--gray-600)">#${inc.id}</td>
       <td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${inc.title}">${inc.title}</td>
       <td><span style="font-size:12px;color:var(--gray-600)">${inc.service}</span></td>
-      <td><span class="badge badge-${inc.severity}">${inc.severity}</span></td>
-      <td><span class="badge badge-${inc.status}">${inc.status.replace('_', ' ')}</span></td>
+      <td><span class="badge badge-${inc.severity}">${severityLabel(inc.severity)}</span></td>
+      <td><span class="badge badge-${inc.status}">${statusLabel(inc.status)}</span></td>
       <td style="font-size:12px;color:var(--gray-500)">${created}</td>
       <td>${actionBtn}</td>
     `;
     tbody.appendChild(tr);
   });
 
-  renderStats(computeStats(filtered));
-  renderTimelineChart(computeTimeline(filtered));
+  const windowed = getWindowedIncidents(filtered, TIMELINE_WINDOW_DAYS);
+  renderStats(computeStats(windowed));
+  renderTimelineChart(computeTimeline(filtered, TIMELINE_WINDOW_DAYS));
   renderSeverityChart(computeStats(filtered));
   renderServiceChartFromFiltered(filtered);
 }
@@ -1055,8 +1521,8 @@ function applyFilters(resetPage = true) {
 function renderPagination(total, pageStart, visibleCount, totalPages) {
   const first = total === 0 ? 0 : pageStart + 1;
   const last = pageStart + visibleCount;
-  document.getElementById('paginationSummary').textContent = `${first}-${last} of ${total} incidents`;
-  document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${totalPages}`;
+  document.getElementById('paginationSummary').textContent = t('paginationSummary', { first, last, total });
+  document.getElementById('pageIndicator').textContent = t('pageIndicator', { page: currentPage, totalPages });
   document.getElementById('previousPage').disabled = currentPage === 1;
   document.getElementById('nextPage').disabled = currentPage === totalPages;
 }
@@ -1090,32 +1556,56 @@ function setSort(column) {
 async function resolveIncident(id) {
   try {
     await api(`/api/incidents/${id}/resolve`, { method: 'PUT' });
-    showToast(`Incident #${id} resolved`);
+    showToast(t('toastResolveOk', { id }));
     refreshAll();
   } catch (e) {
-    showToast('Error resolving incident: ' + e.message);
+    showToast(t('toastResolveError', { error: e.message }));
   }
 }
 
-function exportExcel() {
-  const severity = document.getElementById('filterSeverity').value;
-  const status = document.getElementById('filterStatus').value;
-  const service = document.getElementById('filterService').value;
+async function exportPptx() {
+  const filters = getActiveFilters();
+  const selectedLang = currentLanguage === 'es' ? 'es' : 'en';
+  const params = new URLSearchParams();
+  if (filters.severity) params.set('severity', filters.severity);
+  if (filters.status) params.set('status', filters.status);
+  if (filters.service) params.set('service', filters.service);
+  if (filters.search) params.set('q', filters.search);
+  params.set('days', String(TIMELINE_WINDOW_DAYS));
+  params.set('lang', selectedLang);
+  params.set('language', selectedLang);
+  const url = `${API}/api/export/pptx?${params.toString()}`;
+  try{
+    const token = localStorage.getItem('access_token');
+    const res = await fetch(url, {headers: token?{Authorization:`Bearer ${token}`}:{}});
+    if(!res.ok) throw new Error(`Export ${res.status}`);
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = 'incidents_dashboard.pptx';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+    showToast(t('toastPptx', { days: TIMELINE_WINDOW_DAYS }));
+  }catch(e){ showToast('Export failed: '+e.message); }
+}
 
-  let data = allIncidents;
-  if (severity) data = data.filter(i => i.severity === severity);
-  if (status) data = data.filter(i => i.status === status);
-  if (service) data = data.filter(i => i.service === service);
+function exportExcel() {
+  const filters = getActiveFilters();
+  const filtered = getFilteredIncidents(allIncidents, filters);
+  const data = getWindowedIncidents(filtered, TIMELINE_WINDOW_DAYS);
 
   const rows = data.map(i => ({
-    ID: i.id,
-    Title: i.title,
-    Service: i.service,
-    Severity: i.severity,
-    Status: i.status,
-    Created: i.created_at,
-    Resolved: i.resolved_at || '',
-    Description: i.description || '',
+    [currentLanguage === 'es' ? 'ID' : 'ID']: i.id,
+    [currentLanguage === 'es' ? 'Titulo' : 'Title']: i.title,
+    [currentLanguage === 'es' ? 'Servicio' : 'Service']: i.service,
+    [currentLanguage === 'es' ? 'Severidad' : 'Severity']: severityLabel(i.severity),
+    [currentLanguage === 'es' ? 'Estado' : 'Status']: statusLabel(i.status),
+    [currentLanguage === 'es' ? 'Creado' : 'Created']: i.created_at,
+    [currentLanguage === 'es' ? 'Resuelto' : 'Resolved']: i.resolved_at || '',
+    [currentLanguage === 'es' ? 'Descripcion' : 'Description']: i.description || '',
   }));
 
   const ws = XLSX.utils.json_to_sheet(rows);
@@ -1132,10 +1622,10 @@ function exportExcel() {
   ws['!cols'] = cols;
 
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Incidents');
+  XLSX.utils.book_append_sheet(wb, ws, currentLanguage === 'es' ? 'Incidencias' : 'Incidents');
   const ts = new Date().toISOString().slice(0, 10);
   XLSX.writeFile(wb, `incidents_${ts}.xlsx`);
-  showToast(`Exported ${data.length} incidents to Excel`);
+  showToast(t('toastExcel', { count: data.length, days: TIMELINE_WINDOW_DAYS }));
 }
 
 function renderServices(services) {
@@ -1147,14 +1637,15 @@ function renderServices(services) {
     card.className = 'service-card';
     const dotClass = s.status === 'healthy' ? 'dot-healthy' : s.status === 'degraded' ? 'dot-degraded' : 'dot-down';
     const statusColor = s.status === 'healthy' ? 'var(--health-healthy)' : s.status === 'degraded' ? 'var(--health-degraded)' : 'var(--health-down)';
+    const statusText = s.status === 'healthy' ? t('healthy') : s.status === 'degraded' ? t('degraded') : t('down');
     card.innerHTML = `
       <div class="service-info">
         <div class="service-name">${s.name}</div>
-        <div class="service-meta">${s.uptime_7d}% uptime · ${s.active_incidents || 0} active</div>
+        <div class="service-meta">${t('serviceMeta', { uptime: s.uptime_7d, active: s.active_incidents || 0 })}</div>
       </div>
       <div class="service-status" style="color:${statusColor}">
         <span class="status-dot ${dotClass}"></span>
-        ${s.status}
+        ${statusText}
       </div>
     `;
     grid.appendChild(card);
@@ -1194,22 +1685,31 @@ function updateSearchSuggestions(query) {
 }
 
 async function init() {
+  const savedLanguage = localStorage.getItem('dashboardLanguage');
+  currentLanguage = savedLanguage === 'es' ? 'es' : 'en';
+  updateLanguageButtons();
+  applyTranslations();
   updateClock();
   setInterval(updateClock, 30000);
   await loadServiceFilter();
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+  });
   document.querySelectorAll('thead th.sortable').forEach(th => {
     th.addEventListener('click', () => setSort(th.dataset.sort));
   });
+  let searchDebounce=null;
   ['filterSeverity', 'filterStatus', 'filterService'].forEach(id => {
     document.getElementById(id).addEventListener('change', () => {
       renderActiveFilters();
-      applyFilters();
+      refreshAll();
     });
   });
   document.getElementById('filterSearch').addEventListener('input', (e) => {
     updateSearchSuggestions(e.target.value);
     renderActiveFilters();
-    applyFilters();
+    clearTimeout(searchDebounce);
+    searchDebounce=setTimeout(()=>refreshAll(),300);
   });
   await refreshAll();
 }
