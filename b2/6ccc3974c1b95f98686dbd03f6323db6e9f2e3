@@ -1,0 +1,25 @@
+incidents-dashboard/backend/tests/test_core.py
+  s_b98dde19ab66bc::t_efadd5c33194f0 255
+  s_b98dde19ab66bc::t_9340bbf4943dd2 181,186-187
+incidents-dashboard/backend/app/auth.py
+  s_b98dde19ab66bc::t_efadd5c33194f0 36
+incidents-dashboard/backend/tests/test_unit.py
+  s_b98dde19ab66bc::t_9340bbf4943dd2 96-97,115
+  s_b98dde19ab66bc::t_efadd5c33194f0 34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "b26ccc3974c1b95f98686dbd03f6323db6e9f2e3",
+  "prompts": {},
+  "sessions": {
+    "s_b98dde19ab66bc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbc6ad376fferBha8RlogUR6i5",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "iagocmar <iagocmar@ext.inditex.com>"
+    }
+  }
+}
