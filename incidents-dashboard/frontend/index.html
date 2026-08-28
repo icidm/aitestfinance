@@ -1053,7 +1053,7 @@ async function api(url, opts = {}) {
   if(ct.includes('application/json')) return res.json();
   return res;
 }
-let nextCursor=null, hasMore=false, pageSize=25, cursorStack=[];
+let nextCursor=null, hasMore=false; let cursorStack=[];
 async function fetchPaged(filters={}, cursor=null){
   const params = new URLSearchParams({limit: pageSize, ...filters, ...(cursor?{cursor}:{})});
   const data = await api(`/api/incidents?${params}`);
@@ -1095,7 +1095,7 @@ function getCurrentFilterParams(){
   const svc = document.getElementById('filterService')?.value || '';
   const status = document.getElementById('filterStatus')?.value || '';
   const severity = document.getElementById('filterSeverity')?.value || '';
-  const q = document.getElementById('searchInput')?.value?.trim() || '';
+  const q = document.getElementById('filterSearch')?.value?.trim() || '';
   const p={}; if(status) p.status=status; if(severity) p.severity=severity; if(svc) p.service=svc; if(q) p.q=q; return p;
 }
 function updatePaginationControls(){
@@ -1149,7 +1149,7 @@ function setupSSE(filters){
   }
 }
 // Wire pagination buttons
-document.addEventListener('DOMContentLoaded', ()=>{ const prev=document.getElementById('previousPage'); const nxt=document.getElementById('nextPage'); if(prev) prev.onclick=goPrev; if(nxt) nxt.onclick=goNext; const rs=document.getElementById('rowsSelect'); if(rs) rs.onchange=(e)=>{ pageSize=parseInt(e.target.value)||25; refreshAll(); }; });
+document.addEventListener('DOMContentLoaded', ()=>{ const prev=document.getElementById('previousPage'); const nxt=document.getElementById('nextPage'); if(prev) prev.onclick=goPrev; if(nxt) nxt.onclick=goNext; const rs=document.getElementById('pageSize'); if(rs) rs.onchange=(e)=>{ pageSize=parseInt(e.target.value)||25; refreshAll(); }; });
 
 function renderStats(s) {
   document.getElementById('kpiTotal').textContent = s.total_incidents;
