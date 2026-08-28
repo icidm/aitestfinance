@@ -1,0 +1,26 @@
+incidents-dashboard/frontend/index.html
+  s_142db9d71ee08d::t_013ac2f41dbf66 811-827
+  s_142db9d71ee08d::t_e835b0ed5491e0 1239,1242-1243,1250-1275,1279-1281,1285-1286
+  s_142db9d71ee08d::t_ea6a0511c61f56 1075-1076,1078,1080-1114,1116-1132,1135-1144,1148-1154,1156-1159,1162,1169-1170,1174-1177,1755
+  s_142db9d71ee08d::t_a9f266e3eb82d6 1856-1860
+  s_142db9d71ee08d::t_dce2f114a12ad7 1717,1730-1754
+  s_142db9d71ee08d::t_be4a312398a312 613-643
+incidents-dashboard/backend/app/config.py
+  s_142db9d71ee08d::t_79c6f5c5cc0928 27,29-30,35-38,41-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d6d3da83b0d777eef16e7ac1e69396b77aea3f6a",
+  "prompts": {},
+  "sessions": {
+    "s_142db9d71ee08d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb8fc96c3ffeclJMlK0UlpED3w",
+        "model": "muse-spark-1.2-contributor-free"
+      },
+      "human_author": "iagocmar <iagocmar@ext.inditex.com>"
+    }
+  }
+}
