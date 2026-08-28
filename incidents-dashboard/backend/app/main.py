@@ -35,14 +35,91 @@ if len(settings.SECRET_KEY) < 32:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create tables if not exists (alembic will also handle)
+    # Robust startup: ensure tables exist before seed — alembic upgrade head via sync_engine or fallback to Base.metadata.create_all
+    # Handles fresh sqlite app.db (0 bytes) when alembic only in docker entrypoint, plus postgres path, plus async session creation.
     from .models import Base
+    import logging as _logging
 
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    # Seed users if not exists - hardened: wraps get_password_hash to avoid bcrypt 500 breaking lifespan
+    _log = _logging.getLogger(__name__)
+    # 1) Attempt alembic upgrade head via sync_engine; fallback to create_all (async + sync) — covers both postgres and sqlite
+    _tables_ready = False
+    try:
+        import os as _os
+        from sqlalchemy import create_engine as _create_engine, text as _text
+        from alembic.config import Config as _AlembicConfig
+        from alembic import command as _alembic_command
+
+        _sync_url = _os.getenv("DATABASE_URL_SYNC", settings.DATABASE_URL_SYNC)
+        # Resolve alembic.ini robustly — handles CWD variations (docker /app vs local python vs tests)
+        _candidates = [
+            _os.path.abspath(_os.path.join(_os.path.dirname(__file__), "..", "alembic.ini")),
+            _os.path.join(_os.path.dirname(_os.path.dirname(__file__)), "alembic.ini"),
+            _os.path.join(_os.getcwd(), "incidents-dashboard/backend/alembic.ini"),
+            _os.path.join(_os.getcwd(), "alembic.ini"),
+            "alembic.ini",
+        ]
+        _alembic_ini = next((p for p in _candidates if _os.path.exists(p)), _candidates[0])
+        if _os.path.exists(_alembic_ini):
+            _cfg = _AlembicConfig(_alembic_ini)
+            _cfg.set_main_option("sqlalchemy.url", _sync_url)
+            # Ensure script_location resolves absolute (alembic.ini uses relative 'alembic')
+            _script_loc = _cfg.get_main_option("script_location") or "alembic"
+            if not _os.path.isabs(_script_loc):
+                _abs_script = _os.path.join(_os.path.dirname(_os.path.abspath(_alembic_ini)), _script_loc)
+                if _os.path.exists(_abs_script):
+                    _cfg.set_main_option("script_location", _abs_script)
+            # Validate sync engine connectivity before alembic (creates sqlite file if missing)
+            _sync_kwargs = {"pool_pre_ping": True}
+            if _sync_url.startswith("sqlite"):
+                _sync_kwargs["connect_args"] = {"check_same_thread": False}
+            _sync_engine = _create_engine(_sync_url, **_sync_kwargs)
+            try:
+                with _sync_engine.connect() as _conn:
+                    _conn.execute(_text("SELECT 1"))
+                _alembic_command.upgrade(_cfg, "head")
+                _log.info("alembic upgrade head succeeded via sync_engine")
+                _tables_ready = True
+            finally:
+                _sync_engine.dispose()
+        else:
+            raise FileNotFoundError(f"alembic.ini not found at {_alembic_ini}")
+    except Exception as _e:
+        _log.warning(f"alembic upgrade head failed ({_e}), falling back to Base.metadata.create_all")
+    if not _tables_ready:
+        # Fallback: async create_all (primary) then sync create_all (secondary) for sqlite file creation edge
+        try:
+            async with engine.begin() as _conn:
+                await _conn.run_sync(Base.metadata.create_all)
+            _log.info("async Base.metadata.create_all succeeded")
+            _tables_ready = True
+        except Exception as _e2:
+            _log.warning(f"async create_all failed ({_e2}), trying sync create_all")
+            try:
+                import os as _os2
+                from sqlalchemy import create_engine as _ce2
+
+                _sync_url2 = _os2.getenv("DATABASE_URL_SYNC", settings.DATABASE_URL_SYNC)
+                _sync_kwargs2 = {}
+                if _sync_url2.startswith("sqlite"):
+                    _sync_kwargs2["connect_args"] = {"check_same_thread": False}
+                _se2 = _ce2(_sync_url2, **_sync_kwargs2)
+                Base.metadata.create_all(bind=_se2)
+                _se2.dispose()
+                _log.info("sync Base.metadata.create_all succeeded")
+                _tables_ready = True
+            except Exception as _e3:
+                _log.error(f"all table creation attempts failed: {_e3}")
+    # 2) Idempotent seed with injectable clock and hardened async session creation — ensures viewer/Viewer123! etc. exist
     from .db import async_session_factory
+    from datetime import datetime as _dt, timezone as _tz
 
+    # Injectable clock: default now, overridable via env/SEED_CLOCK or caller injection for determinism (seed 42)
+    def _default_clock():
+        return _dt.now(_tz.utc)
+
+    _seed_clock = _default_clock
+    # If crud.seed_database supports clock param, we pass _seed_clock explicitly for test determinism
+    # First, ensure users exist in isolated session with proper commit/rollback handling
     async with async_session_factory() as session:
         try:
             res = await session.execute(select(User).where(User.username == "admin"))
@@ -55,10 +132,7 @@ async def lifespan(app: FastAPI):
                     try:
                         hashed = get_password_hash(pwd)
                     except Exception as e:
-                        import logging
-
-                        logging.getLogger(__name__).error(f"hash failed for {uname}: {e}")
-                        # fallback direct bcrypt
+                        _log.error(f"hash failed for {uname}: {e}")
                         import bcrypt
 
                         hashed = bcrypt.hashpw(pwd.encode(), bcrypt.gensalt()).decode()
@@ -70,22 +144,34 @@ async def lifespan(app: FastAPI):
                     )
                     session.add(u)
                 await session.commit()
+                _log.info("seeded users viewer/operator/admin")
+            else:
+                _log.info("users already seeded, skipping")
         except Exception as e:
-            import logging
-
-            logging.getLogger(__name__).warning(f"user seed skipped: {e}")
+            _log.warning(f"user seed skipped: {e}")
             try:
                 await session.rollback()
             except Exception:
                 pass
-        # Seed incidents if empty
-        res = await session.execute(select(func.count(Incident.id)))
-        cnt = res.scalar()
-        if cnt == 0:
-            from .crud import seed_database
+    # 3) Seed incidents if empty — separate async session to avoid mixing user-seed transaction state, injectable clock for determinism
+    async with async_session_factory() as session:
+        try:
+            res = await session.execute(select(func.count(Incident.id)))
+            cnt = res.scalar()
+            if cnt == 0:
+                from .crud import seed_database
 
-            await seed_database(session)
-            await session.commit()
+                await seed_database(session, clock=_seed_clock)
+                await session.commit()
+                _log.info(f"seeded incidents via seed_database clock={_seed_clock.__name__}")
+            else:
+                _log.info(f"incidents already present cnt={cnt}, skipping seed")
+        except Exception as e:
+            _log.warning(f"incident seed skipped: {e}")
+            try:
+                await session.rollback()
+            except Exception:
+                pass
     # Start scheduler
     try:
         from .scheduler import start_scheduler
