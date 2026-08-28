@@ -610,6 +610,39 @@
     opacity: 1;
   }
 
+  .user-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    border: 1px solid var(--gray-200);
+    color: var(--ink);
+    font-family: 'Calibri','Carlito', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  .user-pill .role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .header-login-btn {
+    font-family: 'Calibri','Carlito', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    border: 2px solid var(--accent);
+    box-shadow: 0 2px 8px rgba(85,96,232,0.22);
+  }
   .login-modal {
     position: fixed;
     inset: 0;
@@ -625,16 +658,18 @@
     background: var(--inditex-white);
     border-radius: 12px;
     padding: 28px 24px;
-    width: 360px;
-    box-shadow: 0 12px 40px rgba(30,42,59,0.22);
-    border: 1px solid var(--gray-200);
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    box-shadow: 0 16px 48px rgba(30,42,59,0.28);
+    border: 2px solid var(--accent);
+    font-family: 'Calibri','Carlito', sans-serif;
   }
-  .login-modal-card h2 { font-size: 16px; color: var(--ink); margin-bottom: 6px; }
+  .login-modal-card h2 { font-family: 'Calibri','Carlito', sans-serif; font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
   .login-modal-card p { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
   .login-modal-card label { display:block; font-size: 12px; font-weight:600; color: var(--gray-700); margin: 8px 0 4px; }
   .login-modal-card input {
     width: 100%; padding: 8px 12px; border: 1px solid var(--gray-300); border-radius: 6px;
-    font-family: inherit; font-size: 13px; outline: none;
+    font-family: 'Calibri','Carlito', sans-serif; font-size: 13px; outline: none;
   }
   .login-modal-card input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(85,96,232,0.15); }
   .login-modal-card .login-actions { display:flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
@@ -670,6 +705,9 @@
     </div>
   </div>
   <div class="header-right">
+    <span id="userPill" class="user-pill" aria-live="polite" title="Current user">Not signed in</span>
+    <button id="headerLoginBtn" class="btn btn-primary header-login-btn" type="button" onclick="showLoginModal()" aria-label="Login or Switch User" title="Login / Switch User">Login / Switch User</button>
+    <button id="logoutBtn" class="btn btn-outline btn-sm" type="button" onclick="handleLogout()" aria-label="Logout" title="Logout and clear tokens">Logout</button>
     <div class="lang-switcher" role="group" aria-label="Language" id="languageSwitcher">
       <button class="lang-btn" id="langBtnEn" type="button" data-lang="en" aria-label="English" title="English">
         <span class="flag-icon flag-en" aria-hidden="true"></span>
@@ -810,8 +848,8 @@
 <div class="toast" id="toast"></div>
 <div class="login-modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
   <div class="login-modal-card">
-    <h2 id="loginModalTitle">Session expired — Sign in</h2>
-    <p id="loginModalDesc">Your session expired or is unauthorized. Sign in to continue. Seeded accounts: viewer / operator / admin.</p>
+    <h2 id="loginModalTitle">Sign in — Switch User</h2>
+    <p id="loginModalDesc">Sign in to continue. Seeded accounts: viewer / operator / admin. Auto-login uses viewer on first load.</p>
     <form id="loginForm" onsubmit="handleManualLogin(event)">
       <label for="loginUsername">Username</label>
       <input id="loginUsername" name="username" type="text" autocomplete="username" placeholder="viewer" required />
@@ -819,9 +857,10 @@
       <input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Viewer123!" required />
       <div class="login-error" id="loginError" aria-live="polite"></div>
       <div class="login-actions">
-        <button type="submit" class="btn btn-primary btn-sm" id="loginSubmitBtn">Sign in</button>
+        <button type="button" class="btn btn-outline btn-sm" id="loginCancelBtn" onclick="hideLoginModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm" id="loginSubmitBtn" style="background:#5560E8;border-color:#5560E8;font-family:'Calibri','Carlito',sans-serif;font-weight:700">Sign in</button>
       </div>
-      <div class="login-hint">viewer/Viewer123! · operator/Operator123! · admin/Admin123! — CORS is locked down (no * wildcard).</div>
+      <div class="login-hint">viewer/Viewer123! · operator/Operator123! · admin/Admin123! — header shows current user pill. CORS locked down (no * wildcard). Modal closes via Cancel or clicking outside.</div>
     </form>
   </div>
 </div>
@@ -1074,24 +1113,64 @@ function showToast(msg) {
 async function getAccessToken(){ return localStorage.getItem('access_token'); }
 // Deduplicate concurrent viewer auto-login to avoid 4 parallel POST /api/auth/login on refreshAll
 let viewerLoginPromise = null;
+function decodeJwtPayload(token){
+  try{
+    const b64 = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    const json = atob(b64);
+    return JSON.parse(json);
+  }catch(e){ return null; }
+}
+function updateAuthUI(){
+  const pill = document.getElementById('userPill');
+  const hdrBtn = document.getElementById('headerLoginBtn');
+  const token = localStorage.getItem('access_token');
+  if (!pill) return;
+  if (!token){
+    pill.innerHTML = 'Not signed in';
+    pill.title = 'Not signed in';
+    if (hdrBtn) hdrBtn.textContent = 'Login';
+    return;
+  }
+  const payload = decodeJwtPayload(token);
+  let username = payload && payload.sub ? payload.sub : 'user';
+  let role = payload && payload.role ? payload.role : '';
+  // Optimistic display from JWT payload (no extra roundtrip)
+  pill.innerHTML = role ? `${username} <span class="role-badge">${role}</span>` : username;
+  pill.title = role ? `${username} (${role})` : username;
+  if (hdrBtn) hdrBtn.textContent = 'Switch User';
+}
+async function handleLogout(){
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  viewerLoginPromise = null;
+  updateAuthUI();
+  showToast('Signed out — please login');
+  showLoginModal('Signed out. Please sign in (viewer/Viewer123! operator/Operator123! admin/Admin123!).');
+}
 async function loginDefault(){
   if (viewerLoginPromise) return viewerLoginPromise;
   const creds = {username:'viewer', password:'Viewer123!'};
   viewerLoginPromise = (async () => {
     try{
       const res = await fetch(`${API}/api/auth/login`, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: new URLSearchParams(creds)});
-      if(res.ok){ const d=await res.json(); localStorage.setItem('access_token', d.access_token); localStorage.setItem('refresh_token', d.refresh_token); return d.access_token; }
+      if(res.ok){ const d=await res.json(); localStorage.setItem('access_token', d.access_token); localStorage.setItem('refresh_token', d.refresh_token); updateAuthUI(); return d.access_token; }
+      // Try JSON fallback if form failed
+      const r2 = await fetch(`${API}/api/auth/login`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(creds)});
+      if(r2.ok){ const d=await r2.json(); localStorage.setItem('access_token', d.access_token); localStorage.setItem('refresh_token', d.refresh_token); updateAuthUI(); return d.access_token; }
     }catch(e){}
     return null;
   })();
   const tok = await viewerLoginPromise;
   viewerLoginPromise = null;
+  if (tok) updateAuthUI();
   return tok;
 }
 async function ensureAuth(){
   let token = localStorage.getItem('access_token');
-  if (token) return token;
-  return await loginDefault();
+  if (token) { updateAuthUI(); return token; }
+  const t = await loginDefault();
+  updateAuthUI();
+  return t;
 }
 function showLoginModal(msg){
   const m = document.getElementById('loginModal');
@@ -1112,19 +1191,35 @@ async function handleManualLogin(event){
   const errEl = document.getElementById('loginError');
   const btn = document.getElementById('loginSubmitBtn');
   if (btn) btn.disabled = true;
+  if (errEl) errEl.textContent = '';
   try{
-    const res = await fetch(`${API}/api/auth/login`, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: new URLSearchParams({username, password})});
+    // Try form first, then JSON fallback — handle both backend parsers, display error on failure
+    let res = await fetch(`${API}/api/auth/login`, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: new URLSearchParams({username, password})});
+    if (!res.ok){
+      const r2 = await fetch(`${API}/api/auth/login`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username, password})});
+      // Prefer whichever succeeded
+      if (r2.ok) res = r2;
+      else {
+        const txt = await res.text();
+        let txt2 = '';
+        try{ txt2 = await r2.text(); }catch(e){}
+        const msg = txt2 && txt2.length < 200 ? txt2 : txt;
+        if (errEl) errEl.textContent = `Login failed (${res.status}): ${msg.slice(0,160)}`;
+        return;
+      }
+    }
     if (!res.ok){
       const txt = await res.text();
-      if (errEl) errEl.textContent = `Login failed (${res.status}): ${txt.slice(0,120)}`;
+      if (errEl) errEl.textContent = `Login failed (${res.status}): ${txt.slice(0,160)}`;
       return;
     }
     const d = await res.json();
     localStorage.setItem('access_token', d.access_token);
     localStorage.setItem('refresh_token', d.refresh_token);
+    updateAuthUI();
     hideLoginModal();
     showToast('Signed in as ' + username);
-    refreshAll();
+    await refreshAll();
   } catch(e){
     if (errEl) errEl.textContent = 'Login error: ' + e.message;
   } finally {
@@ -1147,16 +1242,19 @@ async function api(url, opts = {}) {
     if(refresh){
       try{
         const r = await fetch(`${API}/api/auth/refresh`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({refresh_token: refresh})});
-        if(r.ok){ const d=await r.json(); localStorage.setItem('access_token', d.access_token); localStorage.setItem('refresh_token', d.refresh_token); baseHeaders['Authorization']=`Bearer ${d.access_token}`; res = await fetch(`${API}${url}`, {...opts, headers: baseHeaders}); }
+        if(r.ok){ const d=await r.json(); localStorage.setItem('access_token', d.access_token); localStorage.setItem('refresh_token', d.refresh_token); updateAuthUI(); baseHeaders['Authorization']=`Bearer ${d.access_token}`; res = await fetch(`${API}${url}`, {...opts, headers: baseHeaders}); }
       }catch(e){}
     }
     if(res.status===401){ // fallback viewer auto-login (retry once)
-      token = await loginDefault(); if(token){ baseHeaders['Authorization']=`Bearer ${token}`; res = await fetch(`${API}${url}`, {...opts, headers: baseHeaders});}
+      token = await loginDefault(); if(token){ updateAuthUI(); baseHeaders['Authorization']=`Bearer ${token}`; res = await fetch(`${API}${url}`, {...opts, headers: baseHeaders});}
     }
     if(res.status===401){
       // Final fallback: show login modal for manual credentials (viewer/operator/admin)
+      updateAuthUI();
       showLoginModal(`API 401 on ${url} — please sign in (viewer/Viewer123! operator/Operator123! admin/Admin123!).`);
       throw new Error(`API error: 401 Unauthorized on ${url} — login required`);
+    } else if (res.ok) {
+      updateAuthUI();
     }
   }
   if (!res.ok) throw new Error(`API error: ${res.status} on ${url}`);
@@ -1201,8 +1299,10 @@ async function refreshAll() {
     renderTimelineChart(timelineData);
     updatePaginationControls();
     setupSSE(filters);
+    updateAuthUI();
   } catch (e) {
     showToast(t('toastLoadError', { error: e.message }));
+    updateAuthUI();
   }
   btn.disabled = false;
   btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15.364-6.364L21 8M3 22v-6h6M21 12a9 9 0 0 1-15.364 6.364L3 16"/></svg> <span id="refreshBtnText">${t('refresh')}</span>`;
@@ -1853,11 +1953,13 @@ async function init() {
   applyTranslations();
   updateClock();
   setInterval(updateClock, 30000);
-  // Viewer auto-login on app start: ensure token before any /api/* fetch to satisfy JWT/RBAC AC-1/2
-  try { await ensureAuth(); } catch(e){ showLoginModal('Auto-login failed — please sign in manually (viewer/Viewer123!).'); }
-  // Close modal on success, but keep polling for manual sign-in if needed
+  // Wire modal close via Cancel/overlay and Escape before auth
   document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') hideLoginModal(); });
   document.getElementById('loginModal')?.addEventListener('click', (e)=>{ if(e.target.id==='loginModal') hideLoginModal(); });
+  // Initial pill state before auto-login
+  updateAuthUI();
+  // Viewer auto-login on app start: ensure token before any /api/* fetch to satisfy JWT/RBAC AC-1/2
+  try { await ensureAuth(); updateAuthUI(); } catch(e){ updateAuthUI(); showLoginModal('Auto-login failed — please sign in manually (viewer/Viewer123!).'); }
   await loadServiceFilter();
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
