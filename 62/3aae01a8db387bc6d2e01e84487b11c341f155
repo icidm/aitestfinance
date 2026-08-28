@@ -1,0 +1,24 @@
+incidents-dashboard/backend/app/db.py
+  s_b9af2cabc4d7ad::t_f11b05c41b8312 2
+  s_b9af2cabc4d7ad::t_6fb24a30a21704 22-33
+incidents-dashboard/frontend/index.html
+  s_b9af2cabc4d7ad::t_89388dcc37d1a6 1056
+  s_b9af2cabc4d7ad::t_3a01351bdaed1e 1098
+  s_b9af2cabc4d7ad::t_bc6a0948e52580 1152
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "623aae01a8db387bc6d2e01e84487b11c341f155",
+  "prompts": {},
+  "sessions": {
+    "s_b9af2cabc4d7ad": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb9041318ffem3RhdtIWx6bnRc",
+        "model": "muse-spark-1.2-contributor-free"
+      },
+      "human_author": "iagocmar <iagocmar@ext.inditex.com>"
+    }
+  }
+}
