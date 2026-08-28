@@ -1,0 +1,27 @@
+incidents-dashboard/backend/requirements.txt
+  s_c0b35ebf3b76c1::t_c0c09e472958d2 12
+.gitignore
+  s_c0b35ebf3b76c1::t_02d92c0f67cfe5 11
+incidents-dashboard/backend/app/auth.py
+  s_c0b35ebf3b76c1::t_e932681ee42607 17,34-49,53-59
+incidents-dashboard/backend/app/routers/auth.py
+  s_c0b35ebf3b76c1::t_213cc93db480d6 2,22-67
+incidents-dashboard/backend/app/main.py
+  s_c0b35ebf3b76c1::t_7ea80ca4a209c3 43,47-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "687a91ad406318545d051041ee2a2ffaa98eb658",
+  "prompts": {},
+  "sessions": {
+    "s_c0b35ebf3b76c1": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb8db8b06ffeJgbZbAWv0yNLg1",
+        "model": "muse-spark-1.2-contributor-free"
+      },
+      "human_author": "iagocmar <iagocmar@ext.inditex.com>"
+    }
+  }
+}
