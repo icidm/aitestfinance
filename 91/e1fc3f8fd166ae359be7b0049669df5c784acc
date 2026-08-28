@@ -1,0 +1,25 @@
+incidents-dashboard/frontend/index.html
+  s_439ad4baabe630::t_6f016be190065b 1245,1249,1253,1256-1257
+  s_439ad4baabe630::t_29f986388e0721 1956,1959-1962
+  s_439ad4baabe630::t_e274f7717c21f2 1302,1305
+  s_439ad4baabe630::t_25901444609374 613-645,661-665,667,672
+  s_439ad4baabe630::t_1c7165018b2738 1116-1149,1156-1159,1165,1170-1173,1194,1196-1210,1213,1219,1222
+  s_439ad4baabe630::t_52638ff05793f6 851-852,860-861,863
+  s_439ad4baabe630::t_886a7d1305d4fa 708-710
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "91e1fc3f8fd166ae359be7b0049669df5c784acc",
+  "prompts": {},
+  "sessions": {
+    "s_439ad4baabe630": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb84ae731ffe7woVlCEeqgcbaY",
+        "model": "muse-spark-1.2-contributor-free"
+      },
+      "human_author": "iagocmar <iagocmar@ext.inditex.com>"
+    }
+  }
+}
