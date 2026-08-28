@@ -1,0 +1,20 @@
+incidents-dashboard/backend/app/main.py
+  s_1615ad2d118dd8::t_139386f3ccd8eb 38-39,41,43-52,62-64,71-112,114,116-122,135,147-149,151-162,164-170
+  s_1615ad2d118dd8::t_dafca4132197d1 53-61,65-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e1a7cade73fdccf734a6e3b0e2961e1857f9b531",
+  "prompts": {},
+  "sessions": {
+    "s_1615ad2d118dd8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb868a659ffeEbL7YQmbbs96o2",
+        "model": "muse-spark-1.2-contributor-free"
+      },
+      "human_author": "iagocmar <iagocmar@ext.inditex.com>"
+    }
+  }
+}
