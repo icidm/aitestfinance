@@ -24,17 +24,22 @@ class Settings(BaseSettings):
     @property
     def cors_origins_list(self) -> List[str]:
         raw = self.CORS_ORIGINS
+        # CORS deny wildcard: never return ["*"] — fail-closed to safe localhost defaults
         if not raw or raw.strip() == "*":
-            return ["*"]
-        # Support comma-separated; also handle JSON list string
+            return ["http://localhost:8000", "http://localhost:3000"]
+        # Support comma-separated; also handle JSON list string — filter out any wildcard entries
         if raw.strip().startswith("["):
             import json
 
             try:
-                return json.loads(raw)
+                parsed = json.loads(raw)
+                # filter wildcard and empty entries
+                filtered = [o.strip() for o in parsed if isinstance(o, str) and o.strip() != "*" and o.strip()]
+                return filtered if filtered else ["http://localhost:8000", "http://localhost:3000"]
             except Exception:
                 pass
-        return [o.strip() for o in raw.split(",") if o.strip()]
+        origins = [o.strip() for o in raw.split(",") if o.strip() and o.strip() != "*"]
+        return origins if origins else ["http://localhost:8000", "http://localhost:3000"]
 
 
 settings = Settings()

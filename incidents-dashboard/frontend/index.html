@@ -610,6 +610,37 @@
     opacity: 1;
   }
 
+  .login-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(30,42,59,0.55);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+  }
+  .login-modal.open { display: flex; }
+  .login-modal-card {
+    background: var(--inditex-white);
+    border-radius: 12px;
+    padding: 28px 24px;
+    width: 360px;
+    box-shadow: 0 12px 40px rgba(30,42,59,0.22);
+    border: 1px solid var(--gray-200);
+  }
+  .login-modal-card h2 { font-size: 16px; color: var(--ink); margin-bottom: 6px; }
+  .login-modal-card p { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+  .login-modal-card label { display:block; font-size: 12px; font-weight:600; color: var(--gray-700); margin: 8px 0 4px; }
+  .login-modal-card input {
+    width: 100%; padding: 8px 12px; border: 1px solid var(--gray-300); border-radius: 6px;
+    font-family: inherit; font-size: 13px; outline: none;
+  }
+  .login-modal-card input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(85,96,232,0.15); }
+  .login-modal-card .login-actions { display:flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
+  .login-modal-card .login-error { font-size: 12px; color: #E13D5B; margin-top: 8px; min-height: 16px; }
+  .login-modal-card .login-hint { font-size: 11px; color: var(--muted); margin-top: 10px; border-top: 1px solid var(--gray-100); padding-top: 10px; }
+
   @media (max-width: 1024px) {
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
     .charts-grid { grid-template-columns: 1fr; }
@@ -777,6 +808,23 @@
 </main>
 
 <div class="toast" id="toast"></div>
+<div class="login-modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
+  <div class="login-modal-card">
+    <h2 id="loginModalTitle">Session expired — Sign in</h2>
+    <p id="loginModalDesc">Your session expired or is unauthorized. Sign in to continue. Seeded accounts: viewer / operator / admin.</p>
+    <form id="loginForm" onsubmit="handleManualLogin(event)">
+      <label for="loginUsername">Username</label>
+      <input id="loginUsername" name="username" type="text" autocomplete="username" placeholder="viewer" required />
+      <label for="loginPassword">Password</label>
+      <input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Viewer123!" required />
+      <div class="login-error" id="loginError" aria-live="polite"></div>
+      <div class="login-actions">
+        <button type="submit" class="btn btn-primary btn-sm" id="loginSubmitBtn">Sign in</button>
+      </div>
+      <div class="login-hint">viewer/Viewer123! · operator/Operator123! · admin/Admin123! — CORS is locked down (no * wildcard).</div>
+    </form>
+  </div>
+</div>
 
 <script>
 const API = '';
@@ -1024,40 +1072,108 @@ function showToast(msg) {
 }
 
 async function getAccessToken(){ return localStorage.getItem('access_token'); }
+// Deduplicate concurrent viewer auto-login to avoid 4 parallel POST /api/auth/login on refreshAll
+let viewerLoginPromise = null;
 async function loginDefault(){
+  if (viewerLoginPromise) return viewerLoginPromise;
   const creds = {username:'viewer', password:'Viewer123!'};
+  viewerLoginPromise = (async () => {
+    try{
+      const res = await fetch(`${API}/api/auth/login`, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: new URLSearchParams(creds)});
+      if(res.ok){ const d=await res.json(); localStorage.setItem('access_token', d.access_token); localStorage.setItem('refresh_token', d.refresh_token); return d.access_token; }
+    }catch(e){}
+    return null;
+  })();
+  const tok = await viewerLoginPromise;
+  viewerLoginPromise = null;
+  return tok;
+}
+async function ensureAuth(){
+  let token = localStorage.getItem('access_token');
+  if (token) return token;
+  return await loginDefault();
+}
+function showLoginModal(msg){
+  const m = document.getElementById('loginModal');
+  const err = document.getElementById('loginError');
+  if (msg && err) err.textContent = msg;
+  if (m) m.classList.add('open');
+}
+function hideLoginModal(){
+  const m = document.getElementById('loginModal');
+  const err = document.getElementById('loginError');
+  if (err) err.textContent = '';
+  if (m) m.classList.remove('open');
+}
+async function handleManualLogin(event){
+  event.preventDefault();
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginSubmitBtn');
+  if (btn) btn.disabled = true;
   try{
-    const res = await fetch(`${API}/api/auth/login`, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: new URLSearchParams(creds)});
-    if(res.ok){ const d=await res.json(); localStorage.setItem('access_token', d.access_token); localStorage.setItem('refresh_token', d.refresh_token); return d.access_token; }
-  }catch(e){}
-  return null;
+    const res = await fetch(`${API}/api/auth/login`, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: new URLSearchParams({username, password})});
+    if (!res.ok){
+      const txt = await res.text();
+      if (errEl) errEl.textContent = `Login failed (${res.status}): ${txt.slice(0,120)}`;
+      return;
+    }
+    const d = await res.json();
+    localStorage.setItem('access_token', d.access_token);
+    localStorage.setItem('refresh_token', d.refresh_token);
+    hideLoginModal();
+    showToast('Signed in as ' + username);
+    refreshAll();
+  } catch(e){
+    if (errEl) errEl.textContent = 'Login error: ' + e.message;
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 }
 async function api(url, opts = {}) {
-  let token = await getAccessToken();
-  if(!token) token = await loginDefault();
-  const headers = { 'Content-Type': 'application/json', ...opts.headers };
-  if(token) headers['Authorization'] = `Bearer ${token}`;
-  let res = await fetch(`${API}${url}`, { ...opts, headers });
+  // Ensure viewer auto-login on app start if no token yet
+  let token = localStorage.getItem('access_token');
+  if(!token) token = await ensureAuth();
+  const baseHeaders = { ...opts.headers };
+  // Only set JSON content-type for JSON bodies, not for form-encoded login/refresh nor blob exports
+  if (!baseHeaders['Content-Type'] && !(opts.body instanceof FormData) && !(opts.body instanceof Blob)) {
+    baseHeaders['Content-Type'] = 'application/json';
+  }
+  if(token) baseHeaders['Authorization'] = `Bearer ${token}`;
+  let res = await fetch(`${API}${url}`, { ...opts, headers: baseHeaders });
   if(res.status===401){
     const refresh = localStorage.getItem('refresh_token');
     if(refresh){
-      const r = await fetch(`${API}/api/auth/refresh`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({refresh_token: refresh})});
-      if(r.ok){ const d=await r.json(); localStorage.setItem('access_token', d.access_token); localStorage.setItem('refresh_token', d.refresh_token); headers['Authorization']=`Bearer ${d.access_token}`; res = await fetch(`${API}${url}`, {...opts, headers}); }
+      try{
+        const r = await fetch(`${API}/api/auth/refresh`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({refresh_token: refresh})});
+        if(r.ok){ const d=await r.json(); localStorage.setItem('access_token', d.access_token); localStorage.setItem('refresh_token', d.refresh_token); baseHeaders['Authorization']=`Bearer ${d.access_token}`; res = await fetch(`${API}${url}`, {...opts, headers: baseHeaders}); }
+      }catch(e){}
     }
-    if(res.status===401){ // fallback login
-      token = await loginDefault(); if(token){ headers['Authorization']=`Bearer ${token}`; res = await fetch(`${API}${url}`, {...opts, headers});}
+    if(res.status===401){ // fallback viewer auto-login (retry once)
+      token = await loginDefault(); if(token){ baseHeaders['Authorization']=`Bearer ${token}`; res = await fetch(`${API}${url}`, {...opts, headers: baseHeaders});}
+    }
+    if(res.status===401){
+      // Final fallback: show login modal for manual credentials (viewer/operator/admin)
+      showLoginModal(`API 401 on ${url} — please sign in (viewer/Viewer123! operator/Operator123! admin/Admin123!).`);
+      throw new Error(`API error: 401 Unauthorized on ${url} — login required`);
     }
   }
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  if (!res.ok) throw new Error(`API error: ${res.status} on ${url}`);
   const ct = res.headers.get('content-type')||'';
   if(ct.includes('application/json')) return res.json();
   return res;
 }
 let nextCursor=null, hasMore=false; let cursorStack=[];
 async function fetchPaged(filters={}, cursor=null){
-  const params = new URLSearchParams({limit: pageSize, ...filters, ...(cursor?{cursor}:{})});
+  const params = new URLSearchParams({limit: String(pageSize), ...filters, ...(cursor?{cursor}:{})});
+  // Attach Authorization via api() — covers cursor pagination, search, and filters server-side
   const data = await api(`/api/incidents?${params}`);
   return data;
+}
+async function fetchWithAuth(url, opts={}){
+  // Helper for non-JSON exports (PPTX/PDF) and SSE that need Authorization + refresh + modal fallback
+  return api(url, opts);
 }
 
 function updateClock() {
@@ -1120,32 +1236,54 @@ async function goPrev(){
   const data = await fetchPaged(filters, prevCursor);
   allIncidents = data.incidents; nextCursor=data.next_cursor; hasMore=data.has_more; applyFilters(); updatePaginationControls();
 }
-let es=null;
+let es=null; let ssePollInterval=null;
 function setupSSE(filters){
   if(es) try{es.close()}catch(e){}
-  // EventSource cannot send Authorization header; use fetch+ReadableStream fallback if needed
+  if(ssePollInterval){ clearInterval(ssePollInterval); ssePollInterval=null; }
+  // EventSource cannot send Authorization header; use fetch+ReadableStream with Authorization for SSE — includes 401 refresh + modal fallback via fetchWithAuth, else polling
   const token = localStorage.getItem('access_token');
-  // Try EventSource with cookie not available; fallback to polling if no EventSource
   if(typeof EventSource !== 'undefined' && token){
-    // Use fetch-stream fallback because token in header needed
-    // Polling fallback when EventSource unavailable documented
     const params = new URLSearchParams(filters).toString();
     const url = `${API}/api/incidents/stream?${params}`;
-    // Fetch streaming with auth header
     (async()=>{
       try{
-        const res = await fetch(url, {headers:{'Authorization':`Bearer ${token}`,'Accept':'text/event-stream'}});
+        // Use Authorization header via fetch streaming — preserves JWT/RBAC AC-7 for live stream; refresh + modal handled by fetchWithAuth pattern
+        let fetchToken = localStorage.getItem('access_token');
+        if (!fetchToken) fetchToken = await ensureAuth();
+        const res = await fetch(url, {headers:{'Authorization':`Bearer ${fetchToken}`,'Accept':'text/event-stream'}});
+        if(res.status===401){
+          // Try refresh once
+          const refresh = localStorage.getItem('refresh_token');
+          if(refresh){
+            const r = await fetch(`${API}/api/auth/refresh`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({refresh_token: refresh})});
+            if(r.ok){ const d=await r.json(); localStorage.setItem('access_token', d.access_token); localStorage.setItem('refresh_token', d.refresh_token); fetchToken=d.access_token; }
+          }
+          if(res.status===401 && !localStorage.getItem('access_token')){
+            fetchToken = await loginDefault();
+          }
+          if(fetchToken){
+            const retry = await fetch(url, {headers:{'Authorization':`Bearer ${fetchToken}`,'Accept':'text/event-stream'}});
+            if(retry.ok && retry.body){
+              const reader = retry.body.getReader(); const decoder=new TextDecoder();
+              let buf='';
+              while(true){ const {done,value}=await reader.read(); if(done) break; buf+=decoder.decode(value,{stream:true}); const parts=buf.split('\n\n'); buf=parts.pop(); for(const part of parts){ if(part.startsWith('data:')){ try{ const ev=JSON.parse(part.slice(5).trim()); if(ev.type==='incident.create' || ev.type==='incident.resolve' || ev.type==='stats') refreshAll(); }catch(e){} } } }
+              return;
+            }
+          }
+          showLoginModal('SSE stream 401 — please sign in to receive live updates.');
+          throw new Error('SSE 401');
+        }
         if(!res.ok || !res.body) throw new Error('SSE failed');
         const reader = res.body.getReader(); const decoder=new TextDecoder();
         let buf='';
-        while(true){ const {done,value}=await reader.read(); if(done) break; buf+=decoder.decode(value,{stream:true}); const parts=buf.split('\n\n'); buf=parts.pop(); for(const part of parts){ if(part.startsWith('data:')){ try{ const ev=JSON.parse(part.slice(5).trim()); if(ev.type==='incident.create' || ev.type==='incident.resolve') refreshAll(); }catch(e){} } } }
-      }catch(e){ // fallback polling every 15s
-        setInterval(()=>refreshAll(),15000);
+        while(true){ const {done,value}=await reader.read(); if(done) break; buf+=decoder.decode(value,{stream:true}); const parts=buf.split('\n\n'); buf=parts.pop(); for(const part of parts){ if(part.startsWith('data:')){ try{ const ev=JSON.parse(part.slice(5).trim()); if(ev.type==='incident.create' || ev.type==='incident.resolve' || ev.type==='stats') refreshAll(); }catch(e){} } } }
+      }catch(e){ // fallback polling every 15s via api() which already handles 401+refresh+modal
+        ssePollInterval = setInterval(()=>refreshAll(),15000);
       }
     })();
   } else {
-    // fallback polling
-    setInterval(()=>refreshAll(),15000);
+    // fallback polling — uses api() so Authorization + 401 refresh + modal already covered
+    ssePollInterval = setInterval(()=>refreshAll(),15000);
   }
 }
 // Wire pagination buttons
@@ -1576,9 +1714,7 @@ async function exportPptx() {
   params.set('language', selectedLang);
   const url = `${API}/api/export/pptx?${params.toString()}`;
   try{
-    const token = localStorage.getItem('access_token');
-    const res = await fetch(url, {headers: token?{Authorization:`Bearer ${token}`}:{}});
-    if(!res.ok) throw new Error(`Export ${res.status}`);
+    const res = await fetchWithAuth(url, {headers: {Accept: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'}});
     const blob = await res.blob();
     const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1590,6 +1726,32 @@ async function exportPptx() {
     URL.revokeObjectURL(blobUrl);
     showToast(t('toastPptx', { days: TIMELINE_WINDOW_DAYS }));
   }catch(e){ showToast('Export failed: '+e.message); }
+}
+async function exportPdf() {
+  const filters = getActiveFilters();
+  const selectedLang = currentLanguage === 'es' ? 'es' : 'en';
+  const params = new URLSearchParams();
+  if (filters.severity) params.set('severity', filters.severity);
+  if (filters.status) params.set('status', filters.status);
+  if (filters.service) params.set('service', filters.service);
+  if (filters.search) params.set('q', filters.search);
+  params.set('days', String(TIMELINE_WINDOW_DAYS));
+  params.set('lang', selectedLang);
+  params.set('language', selectedLang);
+  const url = `${API}/api/export/pdf?${params.toString()}`;
+  try{
+    const res = await fetchWithAuth(url, {headers: {Accept: 'application/pdf'}});
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = 'incidents_dashboard.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+    showToast(t('toastPptx', { days: TIMELINE_WINDOW_DAYS }));
+  }catch(e){ showToast('PDF export failed: '+e.message); }
 }
 
 function exportExcel() {
@@ -1691,6 +1853,11 @@ async function init() {
   applyTranslations();
   updateClock();
   setInterval(updateClock, 30000);
+  // Viewer auto-login on app start: ensure token before any /api/* fetch to satisfy JWT/RBAC AC-1/2
+  try { await ensureAuth(); } catch(e){ showLoginModal('Auto-login failed — please sign in manually (viewer/Viewer123!).'); }
+  // Close modal on success, but keep polling for manual sign-in if needed
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') hideLoginModal(); });
+  document.getElementById('loginModal')?.addEventListener('click', (e)=>{ if(e.target.id==='loginModal') hideLoginModal(); });
   await loadServiceFilter();
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
