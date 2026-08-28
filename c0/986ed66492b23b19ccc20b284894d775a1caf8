@@ -1,0 +1,29 @@
+ARCHITECTURE.md
+  s_78d51e6c75756f::t_bdeb89fea02298 95
+  s_78d51e6c75756f::t_4f6328b2cc588b 121
+  s_78d51e6c75756f::t_7228457a2e39d7 31
+  s_78d51e6c75756f::t_eee14e35b72e9d 29
+  s_78d51e6c75756f::t_121485a9eebc4c 83-91
+  s_78d51e6c75756f::t_ef8bd9258931cc 136-139,141
+  s_78d51e6c75756f::t_7c746260ed7804 149
+  s_78d51e6c75756f::t_c07990547c5105 127,129-132
+  s_78d51e6c75756f::t_9d42ff1436df88 164-173
+  s_78d51e6c75756f::t_5b1c3aa5b77541 25
+  s_78d51e6c75756f::t_9b5c91da828272 98-112,114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c0986ed66492b23b19ccc20b284894d775a1caf8",
+  "prompts": {},
+  "sessions": {
+    "s_78d51e6c75756f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb8391219ffe8oE157FyfrMrbk",
+        "model": "muse-spark-1.2-contributor-free"
+      },
+      "human_author": "iagocmar <iagocmar@ext.inditex.com>"
+    }
+  }
+}
