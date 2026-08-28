@@ -1,0 +1,27 @@
+incidents-dashboard/backend/app/auth.py
+  s_b98dde19ab66bc::t_efadd5c33194f0 36
+.github/workflows/ci.yml
+  s_b98dde19ab66bc::t_efadd5c33194f0 1-61
+incidents-dashboard/backend/tests/test_core.py
+  s_b98dde19ab66bc::t_9340bbf4943dd2 181,186-187
+  s_b98dde19ab66bc::t_efadd5c33194f0 255
+incidents-dashboard/backend/tests/test_unit.py
+  s_b98dde19ab66bc::t_efadd5c33194f0 34
+  s_b98dde19ab66bc::t_9340bbf4943dd2 96-97,115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c18a025c17503cdfb9a13ec3ceb82d1a715aa3c4",
+  "prompts": {},
+  "sessions": {
+    "s_b98dde19ab66bc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fbc6ad376fferBha8RlogUR6i5",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "iagocmar <iagocmar@ext.inditex.com>"
+    }
+  }
+}
