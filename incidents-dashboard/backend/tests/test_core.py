@@ -178,13 +178,13 @@ async def test_create_sorted_desc(client, admin_token):
     assert r2.json()["incidents"][0]["id"] == r.json()["id"]
 
 async def test_cors_headers(client):
-    r = await client.options("/api/stats", headers={"Origin":"http://localhost:8000","Access-Control-Request-Method":"GET"})
+    await client.options("/api/stats", headers={"Origin":"http://localhost:8000","Access-Control-Request-Method":"GET"})
     # FastAPI CORSMiddleware responds
 
 async def test_seed_deterministic(session):
     from app.crud import generate_data
-    from datetime import datetime, timezone
-    clock = lambda: datetime(2026,1,15, tzinfo=timezone.utc)
+    def clock():
+        return datetime(2026, 1, 15, tzinfo=timezone.utc)
     inc1, svc1 = generate_data(clock)
     inc2, svc2 = generate_data(clock)
     assert inc1 == inc2
@@ -252,7 +252,7 @@ async def test_request_id_header(client, admin_token):
 
 async def test_concurrent_pdf_nonblocking(client, admin_token):
     h = {"Authorization": f"Bearer {admin_token}"}
-    import time, asyncio
+    import asyncio
     # Fire 3 pdf requests concurrently and check stats latency
     start = asyncio.get_event_loop().time()
     results = await asyncio.gather(

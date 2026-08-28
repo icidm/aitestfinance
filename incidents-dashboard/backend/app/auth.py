@@ -33,7 +33,7 @@ ALGORITHM = "HS256"
 def verify_password(plain, hashed):
     try:
         return pwd_context.verify(plain, hashed)
-    except (UnknownHashError, ValueError, AttributeError) as e:
+    except (UnknownHashError, ValueError, AttributeError):
         # passlib bcrypt compatibility failures (bcrypt 4.1 vs passlib) -> fallback to direct bcrypt
         try:
             import bcrypt
