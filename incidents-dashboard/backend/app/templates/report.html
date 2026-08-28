@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: 13.33in 7.5in; margin: 0.6in; }
+  body { font-family: Calibri, Carlito, sans-serif; color: #1E2A3B; margin:0; padding:0; }
+  h1 { color: #1E2A3B; font-size: 30pt; margin:0; }
+  h2 { color: #1E2A3B; font-size: 18pt; }
+  .eyebrow { color: #5560E8; font-weight: bold; letter-spacing: 2pt; font-size: 11pt; text-transform: uppercase; }
+  .card { border: 1px solid #E4E7F0; padding: 12pt; margin: 6pt; display:inline-block; width: 2.8in; vertical-align:top; background:#FBFBFE; }
+  .card.accent { border-top: 3pt solid #5560E8; }
+  table { width:100%; border-collapse:collapse; margin-top:12pt; }
+  th { background:#5560E8; color:white; padding:6pt; font-size:9pt; text-align:left; }
+  td { padding:6pt; font-size:10pt; border-bottom:1px solid #E4E7F0; }
+  tr:nth-child(even) td { background:#F7F8FC; }
+  .badge { background:#EEF0FB; color:#5560E8; padding:2pt 6pt; font-size:8pt; border-radius:3pt; }
+  .band { background:#F4F5FC; padding:8pt; margin-top:12pt; text-align:center; }
+  .kpi { font-size:32pt; font-weight:bold; color:#1E2A3B; }
+</style>
+</head>
+<body>
+  <div class="eyebrow">{{ txt.cover_eyebrow }}</div>
+  <h1>{{ txt.cover_title }}</h1>
+  <p>{{ txt.cover_desc }}</p>
+  <p class="eyebrow">{{ txt.cover_generated }} · {{ now.strftime("%d %B %Y") }}</p>
+  <hr/>
+
+  <h2 class="eyebrow">{{ txt.summary_eyebrow }}</h2>
+  <h2>{{ txt.summary_title }}</h2>
+
+  <div class="card accent"><div class="kpi">{{ total }}</div><div>Total incidents</div><div>{{ resolved_count }} resolved</div></div>
+  <div class="card"><div class="kpi">{{ open_count }}</div><div>Open incidents</div><div>{{ in_progress_count }} in progress</div></div>
+  <div class="card"><div class="kpi">{% if mttr %}{{ mttr }} min{% else %}—{% endif %}</div><div>Mean time to resolution</div></div>
+  <div class="card"><div class="kpi">{{ critical_open }}</div><div>Open critical</div><div>{{ by_severity.critical }} critical total</div></div>
+
+  <div class="band">Resolution rate is {{ resolution_rate }}% - {{ open_count }} incidents need active follow-up.</div>
+
+  <h2>Incidents by severity</h2>
+  <table>
+    <tr><th>Severity</th><th>Count</th><th>%</th></tr>
+    <tr><td>Critical</td><td>{{ by_severity.critical }}</td><td>{% if total %}{{ (by_severity.critical/total*100)|round(1) }}%{% else %}0%{% endif %}</td></tr>
+    <tr><td>High</td><td>{{ by_severity.high }}</td><td>{% if total %}{{ (by_severity.high/total*100)|round(1) }}%{% else %}0%{% endif %}</td></tr>
+    <tr><td>Medium</td><td>{{ by_severity.medium }}</td><td>{% if total %}{{ (by_severity.medium/total*100)|round(1) }}%{% else %}0%{% endif %}</td></tr>
+    <tr><td>Low</td><td>{{ by_severity.low }}</td><td>{% if total %}{{ (by_severity.low/total*100)|round(1) }}%{% else %}0%{% endif %}</td></tr>
+  </table>
+
+  <h2>Incidents over time (14 days)</h2>
+  {% if timeline_rows %}
+  <table>
+    <tr><th>DATE</th><th>TOTAL</th><th>BY SEVERITY</th><th>OPEN</th><th>RESOLVED</th></tr>
+    {% for r in timeline_rows %}
+    <tr><td>{{ r.date }}</td><td>{{ r.total }}</td><td>C {{ r.critical }} H {{ r.high }} M {{ r.medium }} L {{ r.low }}</td><td>{{ r.total - r.resolved }}</td><td>{{ r.resolved }}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p>No incidents in the last 14 days.</p>
+  {% endif %}
+
+  <h2>Most affected services</h2>
+  <table>
+    <tr><th>SERVICE</th><th>INCIDENTS</th><th>% OF TOTAL</th></tr>
+    {% for sname, scount in svc_sorted %}
+    <tr><td>{{ sname }}</td><td>{{ scount }}</td><td>{% if total %}{{ (scount/total*100)|round(1) }}%{% else %}0%{% endif %}</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Recent incidents ({{ display_incidents|length }})</h2>
+  <table>
+    <tr><th>ID</th><th>TITLE</th><th>SERVICE</th><th>SEV</th><th>STATUS</th></tr>
+    {% for inc in display_incidents %}
+    <tr><td>#{{ inc.id }}</td><td>{{ inc.title[:64] }}</td><td>{{ inc.service[:28] }}</td><td>{{ inc.severity }}</td><td>{{ inc.status }}</td></tr>
+    {% endfor %}
+  </table>
+  {% if not display_incidents %}
+  <p>No incidents</p>
+  {% endif %}
+
+  <p style="text-align:right; font-size:8pt; color:#8A94A8;">{{ lang|upper }} · Generated {{ now.isoformat() }}</p>
+</body>
+</html>

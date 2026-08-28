@@ -8,3 +8,4 @@
 /AGENTS.md
 /.opencode/opencode.json
 # --- aicontext propagated files (end) ---
+incidents-dashboard/backend/__pycache__/

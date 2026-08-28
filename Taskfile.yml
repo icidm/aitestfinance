@@ -1,0 +1,38 @@
+version: '3'
+tasks:
+  install:
+    desc: Install Python dependencies for the Incidents Dashboard backend
+    dir: incidents-dashboard/backend
+    cmds:
+      - pip install -r requirements.txt
+  start:
+    desc: Start FastAPI + Uvicorn (serves API and frontend at http://localhost:8000)
+    dir: incidents-dashboard/backend
+    cmds:
+      - python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --log-level info
+  dev:
+    desc: Start with reload
+    dir: incidents-dashboard/backend
+    cmds:
+      - python3 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+  lint:
+    desc: Run ruff check and mypy
+    dir: incidents-dashboard/backend
+    cmds:
+      - ruff check .
+      - mypy app --ignore-missing-imports
+  format:
+    desc: Format with ruff
+    dir: incidents-dashboard/backend
+    cmds:
+      - ruff format .
+  format:check:
+    desc: Check formatting
+    dir: incidents-dashboard/backend
+    cmds:
+      - ruff format --check .
+  test:
+    desc: Run pytest with coverage 80
+    dir: incidents-dashboard/backend
+    cmds:
+      - pytest --cov=app --cov-report=xml --cov-report=term --cov-fail-under=80
