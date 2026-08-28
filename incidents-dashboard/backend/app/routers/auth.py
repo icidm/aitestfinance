@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,12 +19,52 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 @router.post("/login")
-async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), session: AsyncSession = Depends(get_session)
-):
-    result = await session.execute(select(User).where(User.username == form_data.username))
-    user = result.scalar_one_or_none()
-    if not user or not verify_password(form_data.password, user.hashed_password):
+async def login(request: Request, session: AsyncSession = Depends(get_session)):
+    # Support both application/x-www-form-urlencoded (OAuth2PasswordRequestForm) and application/json
+    # to avoid 500/422 when frontend sends JSON vs form. Preserves JWT jti rotation and RBAC.
+    content_type = request.headers.get("content-type", "")
+    username = None
+    password = None
+    try:
+        if "application/json" in content_type:
+            body = await request.json()
+            username = body.get("username")
+            password = body.get("password")
+        else:
+            form = await request.form()
+            username = form.get("username")
+            password = form.get("password")
+            # Fallback: if form empty, try JSON body (some clients omit content-type)
+            if not username and not password:
+                try:
+                    body = await request.json()
+                    username = body.get("username") or username
+                    password = body.get("password") or password
+                except Exception:
+                    pass
+    except Exception:
+        raise HTTPException(
+            status_code=422,
+            detail="Missing username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if not username or not password:
+        raise HTTPException(
+            status_code=422,
+            detail="Missing username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    try:
+        result = await session.execute(select(User).where(User.username == username))
+        user = result.scalar_one_or_none()
+    except Exception:
+        raise HTTPException(status_code=500, detail="Database error during login")
+    # verify_password is hardened to never throw 500 (catches UnknownHashError/ValueError -> 401)
+    try:
+        pwd_ok = verify_password(password, user.hashed_password) if user else False
+    except Exception:
+        pwd_ok = False
+    if not user or not pwd_ok:
         raise HTTPException(
             status_code=401,
             detail="Incorrect username or password",

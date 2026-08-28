@@ -14,6 +14,7 @@ try:
 except Exception:
     pass
 from passlib.context import CryptContext
+from passlib.exc import UnknownHashError
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import select
@@ -30,11 +31,32 @@ ALGORITHM = "HS256"
 
 
 def verify_password(plain, hashed):
-    return pwd_context.verify(plain, hashed)
+    try:
+        return pwd_context.verify(plain, hashed)
+    except (UnknownHashError, ValueError, AttributeError) as e:
+        # passlib bcrypt compatibility failures (bcrypt 4.1 vs passlib) -> fallback to direct bcrypt
+        try:
+            import bcrypt
+
+            if isinstance(hashed, str):
+                hashed_b = hashed.encode("utf-8")
+            else:
+                hashed_b = hashed
+            return bcrypt.checkpw(plain.encode("utf-8"), hashed_b)
+        except Exception:
+            return False
+    except Exception:
+        return False
 
 
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    try:
+        return pwd_context.hash(password)
+    except Exception:
+        # fallback to direct bcrypt when passlib backend fails (e.g., bcrypt 4.1+ compatibility)
+        import bcrypt
+
+        return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):

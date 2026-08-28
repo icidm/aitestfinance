@@ -40,25 +40,44 @@ async def lifespan(app: FastAPI):
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    # Seed users if not exists
+    # Seed users if not exists - hardened: wraps get_password_hash to avoid bcrypt 500 breaking lifespan
     from .db import async_session_factory
 
     async with async_session_factory() as session:
-        res = await session.execute(select(User).where(User.username == "admin"))
-        if not res.scalar_one_or_none():
-            for uname, pwd, role in [
-                ("viewer", "Viewer123!", "viewer"),
-                ("operator", "Operator123!", "operator"),
-                ("admin", "Admin123!", "admin"),
-            ]:
-                u = User(
-                    username=uname,
-                    hashed_password=get_password_hash(pwd),
-                    role=role,
-                    is_active=True,
-                )
-                session.add(u)
-            await session.commit()
+        try:
+            res = await session.execute(select(User).where(User.username == "admin"))
+            if not res.scalar_one_or_none():
+                for uname, pwd, role in [
+                    ("viewer", "Viewer123!", "viewer"),
+                    ("operator", "Operator123!", "operator"),
+                    ("admin", "Admin123!", "admin"),
+                ]:
+                    try:
+                        hashed = get_password_hash(pwd)
+                    except Exception as e:
+                        import logging
+
+                        logging.getLogger(__name__).error(f"hash failed for {uname}: {e}")
+                        # fallback direct bcrypt
+                        import bcrypt
+
+                        hashed = bcrypt.hashpw(pwd.encode(), bcrypt.gensalt()).decode()
+                    u = User(
+                        username=uname,
+                        hashed_password=hashed,
+                        role=role,
+                        is_active=True,
+                    )
+                    session.add(u)
+                await session.commit()
+        except Exception as e:
+            import logging
+
+            logging.getLogger(__name__).warning(f"user seed skipped: {e}")
+            try:
+                await session.rollback()
+            except Exception:
+                pass
         # Seed incidents if empty
         res = await session.execute(select(func.count(Incident.id)))
         cnt = res.scalar()
