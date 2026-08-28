@@ -1,4 +1,3 @@
-import base64, json
 from datetime import datetime, timezone
 
 def test_pagination_encode_decode():
@@ -32,8 +31,7 @@ def test_search_rank():
     assert rank_for_q(inc, "payment") > 0
 
 def test_events_bus():
-    import asyncio
-    from app.events import bus, sse_format, matches_filters
+    from app.events import sse_format, matches_filters
     # Test matches_filters
     event = {"incident": {"id":1, "title":"Payment", "service":"Zara-API","severity":"critical","status":"open","description":"pay"}}
     assert matches_filters(event, {"severity":"critical"}) is True
@@ -95,7 +93,8 @@ def test_artifact_store():
 def test_crud_helpers():
     from app.crud import compute_stats, compute_timeline, generate_data
     from datetime import datetime, timezone
-    clock = lambda: datetime(2026,1,15, tzinfo=timezone.utc)
+    def clock():
+        return datetime(2026, 1, 15, tzinfo=timezone.utc)
     incs, svcs = generate_data(clock)
     # Convert to model-like objects for compute
     from app.models import Incident
@@ -113,7 +112,7 @@ def test_config():
 
 def test_scheduler_memory():
     from app.scheduler import get_scheduler, add_scheduled_job, remove_job
-    sched = get_scheduler()
+    get_scheduler()
     # Add dummy job
     def dummy():
         pass
